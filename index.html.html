@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NephroWear Study — Sleep Quality Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --teal-dark:#0B7285;--teal:#1098AD;--teal-light:#E3FAFC;
+  --blue-dark:#1864AB;--blue:#1971C2;--blue-light:#E7F5FF;
+  --purple-dark:#5F3DC4;--purple:#7950F2;--purple-light:#F3F0FF;
+  --orange:#F76707;--orange-light:#FFF4E6;
+  --green-dark:#2B8A3E;--green:#2F9E44;--green-light:#EBFBEE;
+  --red:#E03131;--red-light:#FFF5F5;
+  --amber:#E67700;--amber-light:#FFF3CD;
+  --gray-50:#F8FAFB;--gray-100:#F1F3F5;--gray-200:#E9ECEF;
+  --gray-300:#DEE2E6;--gray-500:#868E96;--gray-700:#495057;--gray-900:#1C2B3A;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow:0 4px 16px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.1);
+  --radius:10px;--radius-lg:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--gray-50);color:var(--gray-900);min-height:100vh;line-height:1.6}
+/* ── TOP HEADER ── */
+.header{background:linear-gradient(135deg,#0B7285 0%,#1098AD 60%,#15AABF 100%);color:#fff;padding:0}
+.header-inner{max-width:1200px;margin:0 auto;padding:24px 32px 0}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.header-logo{display:flex;align-items:center;gap:12px}
+.logo-icon{width:44px;height:44px;background:rgba(255,255,255,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.study-name{font-size:22px;font-weight:600;letter-spacing:-.3px}
+.study-sub{font-size:13px;opacity:.8;margin-top:2px}
+.header-meta{text-align:right;font-size:12px;opacity:.75;line-height:1.7}
+/* ── PARTICIPANT TABS ── */
+.ptab-bar{display:flex;gap:0;margin-top:20px;background:rgba(255,255,255,.12);border-radius:12px 12px 0 0;overflow:hidden;width:fit-content}
+.ptab{padding:12px 28px;cursor:pointer;font-size:14px;font-weight:500;color:rgba(255,255,255,.7);border:none;background:transparent;transition:all .2s;border-bottom:3px solid transparent;display:flex;align-items:center;gap:8px}
+.ptab:hover{color:#fff;background:rgba(255,255,255,.1)}
+.ptab.active{color:#fff;background:rgba(255,255,255,.18);border-bottom:3px solid #fff}
+.ptab-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;letter-spacing:.3px}
+.p1-badge{background:#1971C2;color:#fff}
+.p2-badge{background:#7950F2;color:#fff}
+/* ── MAIN ── */
+.main{max-width:1200px;margin:0 auto;padding:28px 32px 60px}
+.participant-view{display:none}
+.participant-view.active{display:block}
+/* ── INFO STRIP ── */
+.info-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px}
+.info-card{background:#fff;border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow-sm);border-left:4px solid var(--teal)}
+.info-card.dialysis{border-left-color:var(--orange)}
+.info-card.notice{border-left-color:var(--amber);background:var(--amber-light)}
+.info-card.no-survey{border-left-color:var(--gray-300)}
+.info-label{font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.info-value{font-size:13px;color:var(--gray-900);line-height:1.5}
+.info-value strong{font-weight:600;color:var(--teal-dark)}
+.info-value.orange strong{color:var(--orange)}
+/* ── SECTION TITLES ── */
+.section-title{font-size:16px;font-weight:600;color:var(--gray-900);margin:28px 0 14px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';width:4px;height:18px;border-radius:2px;background:var(--teal)}
+.section-title.p2::before{background:var(--purple)}
+/* ── METRIC GRID ── */
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.metric{background:#fff;border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-sm);transition:box-shadow .2s}
+.metric:hover{box-shadow:var(--shadow)}
+.metric-label{font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.metric-val{font-size:26px;font-weight:600;color:var(--gray-900);line-height:1;margin-bottom:4px}
+.metric-unit{font-size:12px;font-weight:400;color:var(--gray-500)}
+.metric-note{font-size:11px;color:var(--gray-500);margin-top:3px}
+.metric-note.good{color:var(--green-dark)}
+.metric-note.warn{color:var(--amber)}
+/* ── CHART CARDS ── */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.chart-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.chart-grid.full{grid-template-columns:1fr}
+.chart-card{background:#fff;border-radius:var(--radius-lg);padding:20px 22px;box-shadow:var(--shadow-sm)}
+.chart-card-title{font-size:13px;font-weight:600;color:var(--gray-700);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.chart-card-sub{font-size:11px;color:var(--gray-500);margin-bottom:14px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--gray-700)}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.dialysis-label{display:inline-flex;align-items:center;gap:4px;background:var(--orange-light);color:var(--orange);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:.3px}
+/* ── COMPARISON ── */
+.comparison-box{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.comp-card{background:#fff;border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow-sm)}
+.comp-title{font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.comp-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-100)}
+.comp-row:last-child{border-bottom:none}
+.comp-metric{font-size:12px;color:var(--gray-700)}
+.comp-values{display:flex;gap:16px}
+.comp-val{text-align:right}
+.comp-val-num{font-size:15px;font-weight:600;font-family:'DM Mono',monospace}
+.comp-val-lbl{font-size:10px;color:var(--gray-500)}
+.comp-val.dial .comp-val-num{color:var(--orange)}
+.comp-val.non .comp-val-num{color:var(--teal)}
+/* ── EXIT INTERVIEW ── */
+.exit-card{background:#fff;border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-sm);margin-bottom:24px}
+.exit-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--gray-100)}
+.exit-icon{width:40px;height:40px;background:var(--blue-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.exit-title{font-size:15px;font-weight:600;color:var(--gray-900)}
+.exit-date{font-size:12px;color:var(--gray-500)}
+.exit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.exit-item{background:var(--gray-50);border-radius:var(--radius);padding:12px 14px}
+.exit-q{font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.exit-a{font-size:13px;color:var(--gray-900);line-height:1.5}
+.exit-a.highlight{color:var(--blue-dark);font-weight:500}
+.exit-a.concern{color:var(--orange);font-weight:500}
+/* ── SURVEY TABLE ── */
+.survey-section{margin-bottom:24px}
+.survey-table-wrap{overflow-x:auto;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+table.survey{width:100%;background:#fff;border-collapse:collapse;font-size:12px}
+table.survey th{background:var(--gray-900);color:#fff;padding:10px 14px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;text-align:left;white-space:nowrap}
+table.survey td{padding:9px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);white-space:nowrap}
+table.survey tr:last-child td{border-bottom:none}
+table.survey tr:hover td{background:var(--gray-50)}
+.qual-badge{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-weight:600;font-size:12px}
+.qual-high{background:#EBFBEE;color:#2B8A3E}
+.qual-mid{background:#FFF3CD;color:#856404}
+.qual-low{background:#FFF5F5;color:#C92A2A}
+.qual-na{background:var(--gray-100);color:var(--gray-500);font-size:10px}
+.day-type{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:12px}
+.day-dial{background:var(--orange-light);color:var(--orange)}
+.day-non{background:var(--teal-light);color:var(--teal-dark)}
+.day-unk{background:var(--gray-100);color:var(--gray-500)}
+/* ── DATA GAP NOTICE ── */
+.gap-notice{background:var(--amber-light);border:1px solid #FFD43B;border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:24px;display:flex;align-items:flex-start;gap:12px}
+.gap-notice-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.gap-notice-text{font-size:13px;color:#7D5A00;line-height:1.6}
+.gap-notice-text strong{font-weight:600}
+/* ── COMBINED TIMELINE ── */
+.timeline-row{background:#fff;border-radius:var(--radius-lg);padding:20px 22px;box-shadow:var(--shadow-sm);margin-bottom:16px}
+/* ── FOOTER NOTE ── */
+.footnote{font-size:11px;color:var(--gray-500);margin-top:6px;font-style:italic}
+@media(max-width:700px){
+  .chart-grid,.chart-grid-3,.comparison-box,.exit-grid{grid-template-columns:1fr}
+  .main,.header-inner{padding:16px}
+  .metric-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="header-logo">
+        <div class="logo-icon">💤</div>
+        <div>
+          <div class="study-name">NephroWear Sleep Quality Study</div>
+          <div class="study-sub">Sleep analysis on dialysis vs. non-dialysis days · University of Rhode Island</div>
+        </div>
+      </div>
+      <div class="header-meta">
+        Study period: May 19 – June 8, 2026<br>
+        Device: Fitbit / Google Health<br>
+        Survey: REDCap · n=2 participants
+      </div>
+    </div>
+    <div class="ptab-bar">
+      <button class="ptab active" onclick="switchParticipant(1)">
+        <span class="ptab-badge p1-badge">P1</span> Participant 1 &nbsp;·&nbsp; May 19 – Jun 1
+      </button>
+      <button class="ptab" onclick="switchParticipant(2)">
+        <span class="ptab-badge p2-badge">P2</span> Participant 2 &nbsp;·&nbsp; Jun 2 – Jun 7
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══════════════════════════════ PARTICIPANT 1 ═══════════════════════════════ -->
+<div class="participant-view active" id="view-p1">
+
+  <div class="info-strip">
+    <div class="info-card">
+      <div class="info-label">Study Period</div>
+      <div class="info-value"><strong>May 19 – June 1, 2026</strong><br>14 days · Consent signed 5/19</div>
+    </div>
+    <div class="info-card dialysis">
+      <div class="info-label">Dialysis Schedule</div>
+      <div class="info-value orange"><strong>Tue · Thu · Sat</strong><br>5/19, 5/21, 5/23*, 5/26, 5/28</div>
+    </div>
+    <div class="info-card">
+      <div class="info-label">Device</div>
+      <div class="info-value"><strong>Fitbit / Google Health</strong><br>Worn continuously · No gaps</div>
+    </div>
+    <div class="info-card no-survey">
+      <div class="info-label">Survey Compliance</div>
+      <div class="info-value" style="color:var(--gray-500)"><strong>No daily surveys submitted</strong><br>P1 unaware of survey notifications</div>
+    </div>
+  </div>
+
+  <p style="font-size:12px;color:var(--orange);background:var(--orange-light);padding:8px 14px;border-radius:8px;margin-bottom:20px">
+    * <strong>5/23 dialysis session terminated early</strong> — treatment stopped 1 hr 21 min before end due to cramping.
+  </p>
+
+  <!-- KEY METRICS -->
+  <div class="section-title">Key Biometric Metrics</div>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-label">Avg Resting HR</div>
+      <div class="metric-val">85.6 <span class="metric-unit">bpm</span></div>
+      <div class="metric-note warn">Above optimal (&gt;80 bpm)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg HRV (RMSSD)</div>
+      <div class="metric-val">11.4 <span class="metric-unit">ms</span></div>
+      <div class="metric-note warn">Low autonomic recovery</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg NREM Heart Rate</div>
+      <div class="metric-val">83.2 <span class="metric-unit">bpm</span></div>
+      <div class="metric-note warn">Elevated during sleep</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg Sleep Score</div>
+      <div class="metric-val">63.8 <span class="metric-unit">/100</span></div>
+      <div class="metric-note warn">Below good threshold (75)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg Deep Sleep</div>
+      <div class="metric-val">26.0 <span class="metric-unit">min</span></div>
+      <div class="metric-note warn">Low (target ≥90 min)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg Resp. Rate</div>
+      <div class="metric-val">14.2 <span class="metric-unit">br/min</span></div>
+      <div class="metric-note good">Within normal range</div>
+    </div>
+  </div>
+
+  <!-- HR CHARTS -->
+  <div class="section-title">Heart Rate Trends</div>
+  <div class="chart-grid full">
+    <div class="chart-card">
+      <div class="chart-card-title">Resting Heart Rate (bpm)</div>
+      <div class="chart-card-sub">Daily resting HR · orange bands = dialysis days</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Resting HR</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F76707;opacity:.3"></div>Dialysis day</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="p1-rhr" role="img" aria-label="P1 resting heart rate trend May 19 to June 1">Resting heart rate ranged 83–89 bpm across the study period.</canvas></div>
+    </div>
+  </div>
+
+  <!-- SLEEP CHARTS -->
+  <div class="section-title">Sleep Quality</div>
+  <div class="chart-grid full">
+    <div class="chart-card">
+      <div class="chart-card-title">Sleep Score &amp; Deep Sleep</div>
+      <div class="chart-card-sub">Wearable-derived nightly scores</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Sleep score (/100)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Deep sleep (min)</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="p1-sleep" role="img" aria-label="P1 sleep score and deep sleep minutes">Sleep scores 57–69; deep sleep 15–39 min.</canvas></div>
+    </div>
+  </div>
+
+  <!-- DIALYSIS COMPARISON -->
+  <div class="section-title">Dialysis vs. Non-Dialysis Night Comparison</div>
+  <div class="comparison-box">
+    <div class="comp-card">
+      <div class="comp-title" style="color:var(--gray-900)">📊 Sleep Quality Comparison</div>
+      <div class="comp-row">
+        <div class="comp-metric">Avg Sleep Score</div>
+        <div class="comp-values">
+          <div class="comp-val dial"><div class="comp-val-num">62.4</div><div class="comp-val-lbl">Dialysis nights</div></div>
+          <div class="comp-val non"><div class="comp-val-num">64.7</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
+        </div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-metric">Avg Deep Sleep (min)</div>
+        <div class="comp-values">
+          <div class="comp-val dial"><div class="comp-val-num">22.0</div><div class="comp-val-lbl">Dialysis nights</div></div>
+          <div class="comp-val non"><div class="comp-val-num">28.7</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
+        </div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-metric">Resting HR (sleep)</div>
+        <div class="comp-values">
+          <div class="comp-val dial"><div class="comp-val-num">85.3</div><div class="comp-val-lbl">Dialysis nights</div></div>
+          <div class="comp-val non"><div class="comp-val-num">85.6</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
+        </div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-metric">HRV – RMSSD (ms)</div>
+        <div class="comp-values">
+          <div class="comp-val dial"><div class="comp-val-num">11.1</div><div class="comp-val-lbl">Dialysis nights</div></div>
+          <div class="comp-val non"><div class="comp-val-num">11.6</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card" style="margin:0">
+      <div class="chart-card-title">Sleep Score: Dialysis vs. Non-Dialysis</div>
+      <div class="chart-card-sub">Per-night breakdown with day type</div>
+      <div style="position:relative;height:220px"><canvas id="p1-compare" role="img" aria-label="Bar chart comparing sleep scores on dialysis vs non-dialysis nights">Dialysis nights avg 62.4; non-dialysis avg 64.7.</canvas></div>
+    </div>
+  </div>
+
+  <!-- EXIT INTERVIEW -->
+  <div class="section-title">Exit Interview — Participant 1</div>
+  <div class="exit-card">
+    <div class="exit-header">
+      <div class="exit-icon">📋</div>
+      <div>
+        <div class="exit-title">Post-Study Exit Interview</div>
+        <div class="exit-date">Submitted June 2, 2026 · by Kunal M.</div>
+      </div>
+    </div>
+    <div class="exit-grid">
+      <div class="exit-item">
+        <div class="exit-q">Overall Experience</div>
+        <div class="exit-a">Neutral</div>
+      </div>
+      <div class="exit-item">
+        <div class="exit-q">Most Burdensome Aspect</div>
+        <div class="exit-a concern">"High HR was stressful. She was checking HR continuously. I didn't like that my heart rate was always high."</div>
+      </div>
+      <div class="exit-item">
+        <div class="exit-q">Did Participation Affect Sleep Thinking?</div>
+        <div class="exit-a highlight">Yes, positively</div>
+      </div>
+      <div class="exit-item">
+        <div class="exit-q">Changes in Sleep Habits</div>
+        <div class="exit-a">No changes during study period</div>
+      </div>
+      <div class="exit-item">
+        <div class="exit-q">Increased Sleep Awareness</div>
+        <div class="exit-a">No change in awareness</div>
+      </div>
+      <div class="exit-item">
+        <div class="exit-q">Smartwatch Comfort</div>
+        <div class="exit-a highlight">Very Comfortable</div>
+      </div>
+      <div class="exit-item">
+        <div class="exit-q">Willingness for Longer Study</div>
+        <div class="exit-a highlight">Yes — Very Likely to participate again</div>
+      </div>
+      <div class="exit-item">
+        <div class="exit-q">Suggestions for Future Studies</div>
+        <div class="exit-a">"Just HR issues. I don't mind doing it. I would like to use the watch without a screen."</div>
+      </div>
+    </div>
+    <div class="footnote" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--gray-100)">
+      ⚠️ P1 noted they were unaware of the daily survey and its notifications — no survey data collected for P1.
+    </div>
+  </div>
+
+</div><!-- end p1 -->
+
+<!-- ═══════════════════════════════ PARTICIPANT 2 ═══════════════════════════════ -->
+<div class="participant-view" id="view-p2">
+
+  <div class="info-strip">
+    <div class="info-card" style="border-left-color:var(--purple)">
+      <div class="info-label">Study Period</div>
+      <div class="info-value"><strong>May 26 – June 8, 2026</strong><br>14 days · Wearable Jun 2–7</div>
+    </div>
+    <div class="info-card" style="border-left-color:var(--purple)">
+      <div class="info-label">Wearable Schedule</div>
+      <div class="info-value"><strong>Jun 2 – Jun 7, 2026</strong><br>Fitbit / Google Health · 6 nights</div>
+    </div>
+    <div class="info-card" style="border-left-color:var(--green)">
+      <div class="info-label">Survey Compliance</div>
+      <div class="info-value"><strong style="color:var(--green-dark)">13 / 13 surveys complete</strong><br>100% compliance · REDCap</div>
+    </div>
+    <div class="info-card" style="border-left-color:var(--blue)">
+      <div class="info-label">Exit Interview</div>
+      <div class="info-value"><strong>Not yet conducted</strong><br>Study ongoing as of Jun 8</div>
+    </div>
+  </div>
+
+  <!-- KEY METRICS -->
+  <div class="section-title p2">Key Biometric Metrics</div>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-label">Avg Resting HR</div>
+      <div class="metric-val">79.1 <span class="metric-unit">bpm</span></div>
+      <div class="metric-note good">Strong declining trend ↓</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg HRV (RMSSD)</div>
+      <div class="metric-val">14.7 <span class="metric-unit">ms</span></div>
+      <div class="metric-note good">Adequate autonomic recovery</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg NREM Heart Rate</div>
+      <div class="metric-val">72.5 <span class="metric-unit">bpm</span></div>
+      <div class="metric-note good">Stable during sleep</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg Sleep Score</div>
+      <div class="metric-val">69.3 <span class="metric-unit">/100</span></div>
+      <div class="metric-note warn">Approaching good threshold (75)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg Deep Sleep</div>
+      <div class="metric-val">44.8 <span class="metric-unit">min</span></div>
+      <div class="metric-note good">Adequate (target ≥90 min)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg Resp. Rate</div>
+      <div class="metric-val">15.4 <span class="metric-unit">br/min</span></div>
+      <div class="metric-note warn">Spike noted Jun 5 (18.4)</div>
+    </div>
+  </div>
+
+  <!-- SURVEY SUMMARY METRICS -->
+  <div class="section-title p2">Survey Summary</div>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-label">Subjective Sleep Quality</div>
+      <div class="metric-val" style="font-size:16px;color:var(--green-dark)">Very Good</div>
+      <div class="metric-note good">All 13 nights rated Very Good</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Sleep Disturbances</div>
+      <div class="metric-val" style="font-size:16px;color:var(--green-dark)">None</div>
+      <div class="metric-note good">No disturbances on any night</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Sleep Medication</div>
+      <div class="metric-val" style="font-size:16px;color:var(--green-dark)">None</div>
+      <div class="metric-note good">No medication taken</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Nap Days</div>
+      <div class="metric-val">6 <span class="metric-unit">/ 13 nights</span></div>
+      <div class="metric-note warn">46% of survey nights</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg Sleep Latency</div>
+      <div class="metric-val">26 <span class="metric-unit">min</span></div>
+      <div class="metric-note warn">Slightly above normal (&lt;20 min)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg Total Sleep</div>
+      <div class="metric-val">8h 53<span class="metric-unit">min</span></div>
+      <div class="metric-note good">Good overall duration</div>
+    </div>
+  </div>
+
+  <!-- HR CHARTS -->
+  <div class="section-title p2">Heart Rate Trends</div>
+  <div class="chart-grid full">
+    <div class="chart-card">
+      <div class="chart-card-title">Resting Heart Rate (bpm)</div>
+      <div class="chart-card-sub">Daily resting HR · Jun 2–7 · consistent downward trend</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Resting HR</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="p2-rhr" role="img" aria-label="P2 resting heart rate trend June 2 to 7, declining from 85.6 to 73.3 bpm">Resting HR declined from 85.6 to 73.3 bpm across Jun 2–7.</canvas></div>
+    </div>
+  </div>
+
+  <!-- SLEEP CHARTS -->
+  <div class="section-title p2">Sleep Quality</div>
+  <div class="chart-grid full">
+    <div class="chart-card">
+      <div class="chart-card-title">Sleep Score &amp; Deep Sleep</div>
+      <div class="chart-card-sub">Wearable-derived nightly scores · Jun 2–7</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Sleep score (/100)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Deep sleep (min)</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="p2-sleep" role="img" aria-label="P2 sleep score and deep sleep minutes June 2 to 7">Sleep scores 65–76; deep sleep 19–71 min.</canvas></div>
+    </div>
+  </div>
+
+  <!-- SURVEY vs WEARABLE COMPARISON -->
+  <div class="section-title p2">Survey vs. Watch: Sleep Duration — Jun 2–6 Overlap</div>
+
+  <div class="chart-card" style="margin-bottom:24px">
+    <div class="chart-card-title">Self-Reported Sleep (Survey) vs. Watch-Recorded Sleep (Fitbit)</div>
+    <div class="chart-card-sub">How many hours P2 said she slept vs. what the Fitbit actually recorded each night</div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Survey: self-reported sleep</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Watch: Fitbit recorded sleep</div>
+    </div>
+    <div style="position:relative;height:260px"><canvas id="p2-cmp1" role="img" aria-label="Survey vs Fitbit sleep duration June 2 to 6">Self-reported vs Fitbit-recorded sleep hours for Jun 2–6.</canvas></div>
+    <div class="footnote" style="margin-top:10px">Fitbit totals all sleep sessions across the day (including naps). Survey reflects participant's self-reported main sleep period. Differences may reflect daytime napping captured by watch but not included in survey response.</div>
+  </div>
+
+  <!-- SURVEY DATA -->
+  <div class="section-title p2">Daily Survey Data — May 26 – June 8</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-card-title">Total Sleep Duration per Night</div>
+      <div class="chart-card-sub">Self-reported hours slept · orange = nap taken previous day</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>No nap</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F76707"></div>Nap taken previous day</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="p2-qual" role="img" aria-label="P2 total sleep duration with nap days highlighted">Sleep duration ranged 6h 30min–10h 45min; nap days shown in orange.</canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-card-title">Total Sleep Duration &amp; Sleep Latency</div>
+      <div class="chart-card-sub">Self-reported total hours slept and minutes to fall asleep each night</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Total sleep (hrs)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F76707"></div>Latency (min)</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="p2-latency" role="img" aria-label="P2 total sleep duration and latency chart">Total sleep ranged 6.5–10.75 hrs; latency 5–60 min.</canvas></div>
+    </div>
+  </div>
+
+
+
+  <!-- SURVEY TABLE -->
+  <div class="survey-section">
+    <div class="section-title p2" style="margin-top:4px">Survey Response Details</div>
+    <div class="survey-table-wrap">
+      <table class="survey">
+        <thead>
+          <tr>
+            <th>#</th><th>Date</th><th>Bedtime</th><th>Wake Time</th>
+            <th>Latency (min)</th><th>Total Sleep</th><th>Sleep Quality</th>
+            <th>Nap Prev. Day</th><th>Disturbances</th><th>Watch Worn</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>May 26</td><td>9:30 PM</td><td>10:00 AM</td><td>5</td><td>10h 05min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>Yes</td><td>None</td><td>✓</td></tr>
+          <tr><td>2</td><td>May 27</td><td>7:00 PM</td><td>9:20 AM</td><td>10</td><td>9h 52min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>Yes</td><td>None</td><td>✓</td></tr>
+          <tr><td>3</td><td>May 28</td><td>11:10 PM</td><td>10:00 AM</td><td>30</td><td>10h 10min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
+          <tr><td>4</td><td>May 29</td><td>11:00 PM</td><td>8:30 AM</td><td>10</td><td>6h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
+          <tr><td>5</td><td>May 30</td><td>10:45 PM</td><td>10:00 AM</td><td>60</td><td>6h 45min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
+          <tr><td>6</td><td>May 31</td><td>3:00 AM</td><td>10:30 AM</td><td>30</td><td>7h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>Yes</td><td>None</td><td>✓</td></tr>
+          <tr><td>7</td><td>Jun 1</td><td>3:30 AM</td><td>10:20 AM</td><td>30</td><td>7h 20min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
+          <tr style="background:#F3F0FF"><td>8</td><td>Jun 2 ⚡</td><td>10:30 PM</td><td>10:00 AM</td><td>15</td><td>9h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
+          <tr style="background:#F3F0FF"><td>9</td><td>Jun 3 ⚡</td><td>5:00 PM</td><td>10:00 AM</td><td>30</td><td>7h 00min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>Yes</td><td>None</td><td>✓</td></tr>
+          <tr style="background:#F3F0FF"><td>10</td><td>Jun 4 ⚡</td><td>11:15 PM</td><td>10:00 AM</td><td>30</td><td>10h 00min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
+          <tr style="background:#F3F0FF"><td>11</td><td>Jun 5 ⚡</td><td>6:15 PM</td><td>10:00 AM</td><td>30</td><td>10h 20min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>Yes</td><td>None</td><td>✓</td></tr>
+          <tr style="background:#F3F0FF"><td>12</td><td>Jun 6 ⚡</td><td>6:00 PM</td><td>10:26 AM</td><td>30</td><td>10h 45min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>Yes</td><td>None</td><td>✓</td></tr>
+          <tr><td>13</td><td>Jun 8</td><td>11:00 PM</td><td>10:30 AM</td><td>40</td><td>10h 00min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="footnote" style="margin-top:8px">⚡ = wearable data also available for this date &nbsp;|&nbsp; Sleep quality rated as Very Good on all 13 nights &nbsp;|&nbsp; No sleep disturbances or sleep medication reported on any night &nbsp;|&nbsp; Sleep duration data entry anomalies on May 26, Jun 3 and Jun 4 corrected · Latency anomalies on May 31 and Jun 4 corrected to 30 min</div>
+  </div>
+
+</div><!-- end p2 -->
+</div><!-- end main -->
+
+<script>
+// ── Utility ──────────────────────────────────────────────
+const gc = 'rgba(0,0,0,0.05)';
+const tc = '#868E96';
+function baseOpts(extra) {
+  return Object.assign({
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,backgroundColor:'rgba(28,43,58,.9)',titleFont:{family:'DM Sans'},bodyFont:{family:'DM Sans'}}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:10,family:'DM Sans'},maxRotation:45,autoSkip:false}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10,family:'DM Sans'}}}
+    }
+  }, extra||{});
+}
+
+// ── P1 Dialysis markers ───────────────────────────────────
+const p1Dates = ['5/19','5/20','5/21','5/22','5/23','5/24','5/25','5/26','5/27','5/28','5/29','5/30','5/31','6/1'];
+const p1DialDays = new Set([0,2,4,7,9]); // indices of dialysis days
+const p1RHR = [88.9,86.7,88.0,87.3,85.9,86.4,85.1,83.4,83.6,83.0,85.0,86.0,85.0,87.3];
+
+// Annotation-style: color each bar based on dialysis day
+const p1RHRColors = p1Dates.map((_,i)=> p1DialDays.has(i)?'rgba(247,103,7,0.85)':'rgba(16,152,173,0.8)');
+const p1RHRBorder = p1Dates.map((_,i)=> p1DialDays.has(i)?'#C2510A':'#0B7285');
+
+new Chart(document.getElementById('p1-rhr'), {
+  type:'bar',
+  data:{labels:p1Dates,datasets:[
+    {label:'Resting HR',data:p1RHR,backgroundColor:p1RHRColors,borderColor:p1RHRBorder,borderWidth:1,borderRadius:4}
+  ]},
+  options:{...baseOpts(),scales:{
+    x:{grid:{color:gc},ticks:{color:tc,font:{size:10},maxRotation:45,autoSkip:false}},
+    y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:75,max:95,title:{display:true,text:'bpm',color:tc,font:{size:10}}}
+  }}
+});
+
+// P1 Sleep
+const p1SleepDates = ['5/20','5/21','5/22','5/23','5/25','5/26','5/27','5/28','5/30','5/31','6/1'];
+const p1Scores =     [62,    57,    63,    61,    63,    69,    61,    63,    60,    69,    66];
+const p1Deep =       [34,    31,    39,    19,    28,    30,    15,    21,    27,    35,    27];
+const p1SleepDialDays = new Set([1,3,5,7]); // 5/21,5/23,5/26,5/28
+const p1ScoreColors = p1SleepDates.map((_,i)=> p1SleepDialDays.has(i)?'rgba(247,103,7,0.8)':'rgba(121,80,242,0.8)');
+
+new Chart(document.getElementById('p1-sleep'), {
+  type:'bar',
+  data:{labels:p1SleepDates,datasets:[
+    {label:'Sleep score',data:p1Scores,backgroundColor:p1ScoreColors,borderRadius:4,yAxisID:'y',order:2},
+    {label:'Deep sleep (min)',data:p1Deep,type:'line',borderColor:'#1098AD',pointRadius:4,pointBackgroundColor:'#1098AD',tension:0.35,fill:false,yAxisID:'y2',order:1}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:10},maxRotation:45,autoSkip:false}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:40,max:80,title:{display:true,text:'Score /100',color:tc,font:{size:10}}},
+      y2:{position:'right',grid:{display:false},ticks:{color:tc,font:{size:10}},min:0,max:50,title:{display:true,text:'Deep sleep (min)',color:tc,font:{size:10}}}
+    }
+  }
+});
+
+// P1 Dialysis comparison bar chart
+new Chart(document.getElementById('p1-compare'), {
+  type:'bar',
+  data:{
+    labels:['5/21 (D)','5/22','5/23 (D)','5/25','5/26 (D)','5/27','5/28 (D)','5/30','5/31','6/1'],
+    datasets:[{
+      label:'Sleep score',
+      data:[57,63,61,63,69,61,63,60,69,66],
+      backgroundColor:['rgba(247,103,7,.8)','rgba(16,152,173,.8)','rgba(247,103,7,.8)','rgba(16,152,173,.8)','rgba(247,103,7,.8)','rgba(16,152,173,.8)','rgba(247,103,7,.8)','rgba(16,152,173,.8)','rgba(16,152,173,.8)','rgba(16,152,173,.8)'],
+      borderRadius:5
+    }]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:9},maxRotation:50,autoSkip:false}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:40,max:80}
+    }
+  }
+});
+
+// ── P2 CHARTS ────────────────────────────────────────────
+const p2RHRDates = ['6/2','6/3','6/4','6/5','6/6','6/7'];
+const p2RHR      = [85.6, 82.4, 80.4, 77.1, 75.5, 73.3];
+
+new Chart(document.getElementById('p2-rhr'), {
+  type:'bar',
+  data:{labels:p2RHRDates,datasets:[
+    {label:'Resting HR',data:p2RHR,backgroundColor:'rgba(121,80,242,0.8)',borderColor:'#5F3DC4',borderWidth:1,borderRadius:4}
+  ]},
+  options:{...baseOpts(),scales:{
+    x:{grid:{color:gc},ticks:{color:tc,font:{size:11}}},
+    y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},min:65,max:90,title:{display:true,text:'bpm',color:tc,font:{size:10}}}
+  }}
+});
+
+// P2 Sleep score + deep sleep
+const p2Dates  = ['6/2','6/3','6/4','6/5','6/6','6/7'];
+const p2Scores = [68,   65,   72,   76,   69,   66];
+const p2Deep   = [65,   21,   49,   71,   19,   45];
+
+new Chart(document.getElementById('p2-sleep'), {
+  type:'bar',
+  data:{labels:p2Dates,datasets:[
+    {label:'Sleep score',data:p2Scores,backgroundColor:'rgba(121,80,242,0.75)',borderRadius:5,yAxisID:'y',order:2},
+    {label:'Deep sleep (min)',data:p2Deep,type:'line',borderColor:'#1098AD',pointRadius:4,pointBackgroundColor:'#1098AD',tension:0.35,fill:false,yAxisID:'y2',order:1}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:11}}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:50,max:85,title:{display:true,text:'Score /100',color:tc,font:{size:10}}},
+      y2:{position:'right',grid:{display:false},ticks:{color:tc,font:{size:10}},min:0,max:80,title:{display:true,text:'Deep sleep (min)',color:tc,font:{size:10}}}
+    }
+  }
+});
+
+// P2 Total sleep duration bars — orange if nap taken that day
+const p2SurveyDates  = ['5/26','5/27','5/28','5/29','5/30','5/31','6/1','6/2','6/3','6/4','6/5','6/6','6/8'];
+const p2TotalSleepHrs= [10.08, 9.87, 10.17, 6.50, 6.75, 7.50, 7.33, 9.50, 7.00, 10.00, 10.33, 10.75, 10.00];
+// Nap taken previous day: Yes on 5/26,5/27,5/31,6/3,6/5,6/6 → indices 0,1,5,8,10,11
+const napDays = new Set([0,1,5,8,10,11]);
+const napColors = p2TotalSleepHrs.map((_,i)=> napDays.has(i)?'rgba(247,103,7,0.82)':'rgba(121,80,242,0.75)');
+
+new Chart(document.getElementById('p2-qual'), {
+  type:'bar',
+  data:{labels:p2SurveyDates,datasets:[
+    {label:'Total sleep (hrs)',data:p2TotalSleepHrs,backgroundColor:napColors,borderRadius:4}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{
+      label:function(ctx){
+        const h=Math.floor(ctx.raw);const m=Math.round((ctx.raw-h)*60);
+        const nap=napDays.has(ctx.dataIndex)?' (nap prev. day)':'';
+        return `Total sleep: ${h}h ${m}min${nap}`;
+      }
+    }}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:10},maxRotation:45,autoSkip:false}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10},callback:v=>`${v}h`},min:0,max:12,title:{display:true,text:'Hours slept',color:tc,font:{size:10}}}
+    }
+  }
+});
+
+// P2 Total sleep duration (decimal hrs) + Latency overlay
+const p2TotalSleep = p2TotalSleepHrs;
+const p2Latency    = [5,     10,   30,    10,   60,   30,   30,   15,   30,   30,    30,    30,    40];
+
+new Chart(document.getElementById('p2-latency'), {
+  type:'bar',
+  data:{labels:p2SurveyDates,datasets:[
+    {label:'Total sleep (hrs)',data:p2TotalSleep,backgroundColor:'rgba(16,152,173,0.75)',borderRadius:3,yAxisID:'y'},
+    {label:'Latency (min)',data:p2Latency,type:'line',borderColor:'#F76707',pointRadius:4,pointBackgroundColor:'#F76707',tension:0.3,fill:false,yAxisID:'y2'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{
+      label:function(ctx){
+        if(ctx.datasetIndex===0){
+          const h=Math.floor(ctx.raw);const m=Math.round((ctx.raw-h)*60);
+          return `Total sleep: ${h}h ${m}min`;
+        }
+        return `Latency: ${ctx.raw} min`;
+      }
+    }}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:10},maxRotation:45,autoSkip:false}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:0,max:13,title:{display:true,text:'Total sleep (hrs)',color:tc,font:{size:10}}},
+      y2:{position:'right',grid:{display:false},ticks:{color:tc,font:{size:10}},min:0,max:80,title:{display:true,text:'Latency (min)',color:tc,font:{size:10}}}
+    }
+  }
+});
+
+// ── P2 COMPARISON: Survey vs Watch sleep hours ────────────
+const cmpDates    = ['Jun 2','Jun 3','Jun 4','Jun 5','Jun 6'];
+const cmpSurveyH  = [9.5,   7.0,   10.0,  10.33, 10.75]; // self-reported
+const cmpFitbitH  = [11.9,  12.1,  12.42,  9.33, 12.75]; // Fitbit total (all sessions)
+
+new Chart(document.getElementById('p2-cmp1'), {
+  type:'bar',
+  data:{labels:cmpDates,datasets:[
+    {label:'Survey: self-reported',data:cmpSurveyH,backgroundColor:'rgba(121,80,242,0.8)',borderRadius:5,barPercentage:.38,categoryPercentage:.85},
+    {label:'Watch: Fitbit recorded',data:cmpFitbitH,backgroundColor:'rgba(16,152,173,0.8)',borderRadius:5,barPercentage:.38,categoryPercentage:.85}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{
+      label:function(ctx){
+        const h=Math.floor(ctx.raw);const m=Math.round((ctx.raw-h)*60);
+        const lbl=ctx.datasetIndex===0?'Survey':'Watch';
+        return `${lbl}: ${h}h ${m}min`;
+      }
+    }}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:12}}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:11},callback:v=>`${v}h`},min:0,max:15,
+         title:{display:true,text:'Hours of sleep',color:tc,font:{size:11}}}
+    }
+  }
+});
+
+// ── Tab switcher ──────────────────────────────────────────
+function switchParticipant(n) {
+  document.querySelectorAll('.participant-view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.ptab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-p'+n).classList.add('active');
+  document.querySelectorAll('.ptab')[n-1].classList.add('active');
+}
+</script>
+</body>
+</html>
