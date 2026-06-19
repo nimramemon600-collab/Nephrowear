@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -200,33 +201,33 @@ table.survey tr:hover td{background:var(--gray-50)}
   <div class="metric-grid">
     <div class="metric">
       <div class="metric-label">Avg Resting HR</div>
-      <div class="metric-val">85.6 <span class="metric-unit">bpm</span></div>
+      <div class="metric-val">86.6 <span class="metric-unit">bpm</span></div>
       <div class="metric-note warn">Above optimal (&gt;80 bpm)</div>
     </div>
     <div class="metric">
-      <div class="metric-label">Avg HRV (RMSSD)</div>
-      <div class="metric-val">11.4 <span class="metric-unit">ms</span></div>
-      <div class="metric-note warn">Low autonomic recovery</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">Avg NREM Heart Rate</div>
-      <div class="metric-val">83.2 <span class="metric-unit">bpm</span></div>
-      <div class="metric-note warn">Elevated during sleep</div>
-    </div>
-    <div class="metric">
       <div class="metric-label">Avg Sleep Score</div>
-      <div class="metric-val">63.8 <span class="metric-unit">/100</span></div>
-      <div class="metric-note warn">Below good threshold (75)</div>
+      <div class="metric-val">73.4 <span class="metric-unit">/100</span></div>
+      <div class="metric-note good">Near good threshold (75)</div>
     </div>
     <div class="metric">
       <div class="metric-label">Avg Deep Sleep</div>
-      <div class="metric-val">26.0 <span class="metric-unit">min</span></div>
+      <div class="metric-val">29.6 <span class="metric-unit">min</span></div>
       <div class="metric-note warn">Low (target ≥90 min)</div>
     </div>
     <div class="metric">
-      <div class="metric-label">Avg Resp. Rate</div>
-      <div class="metric-val">14.2 <span class="metric-unit">br/min</span></div>
-      <div class="metric-note good">Within normal range</div>
+      <div class="metric-label">Avg Light Sleep</div>
+      <div class="metric-val">213.5 <span class="metric-unit">min</span></div>
+      <div class="metric-note">Majority of sleep time</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg REM Sleep</div>
+      <div class="metric-val">40.8 <span class="metric-unit">min</span></div>
+      <div class="metric-note">Moderate REM duration</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg Awake Time</div>
+      <div class="metric-val">13.0 <span class="metric-unit">min</span></div>
+      <div class="metric-note good">Low awake periods</div>
     </div>
   </div>
 
@@ -235,12 +236,12 @@ table.survey tr:hover td{background:var(--gray-50)}
   <div class="chart-grid full">
     <div class="chart-card">
       <div class="chart-card-title">Resting Heart Rate (bpm)</div>
-      <div class="chart-card-sub">Daily resting HR · orange bands = dialysis days</div>
+      <div class="chart-card-sub">From highest-score session per night · orange = dialysis day</div>
       <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Resting HR</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#F76707;opacity:.3"></div>Dialysis day</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Non-dialysis</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F76707"></div>Dialysis day</div>
       </div>
-      <div style="position:relative;height:200px"><canvas id="p1-rhr" role="img" aria-label="P1 resting heart rate trend May 19 to June 1">Resting heart rate ranged 83–89 bpm across the study period.</canvas></div>
+      <div style="position:relative;height:200px"><canvas id="p1-rhr" role="img" aria-label="P1 resting heart rate trend May 19 to June 1">Resting heart rate ranged 83–91 bpm across the study period.</canvas></div>
     </div>
   </div>
 
@@ -249,12 +250,28 @@ table.survey tr:hover td{background:var(--gray-50)}
   <div class="chart-grid full">
     <div class="chart-card">
       <div class="chart-card-title">Sleep Score &amp; Deep Sleep</div>
-      <div class="chart-card-sub">Wearable-derived nightly scores</div>
+      <div class="chart-card-sub">From highest-score session per night · orange = dialysis day</div>
       <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Sleep score (/100)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Sleep score (non-dialysis)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F76707"></div>Sleep score (dialysis)</div>
         <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Deep sleep (min)</div>
       </div>
-      <div style="position:relative;height:200px"><canvas id="p1-sleep" role="img" aria-label="P1 sleep score and deep sleep minutes">Sleep scores 57–69; deep sleep 15–39 min.</canvas></div>
+      <div style="position:relative;height:210px"><canvas id="p1-sleep" role="img" aria-label="P1 sleep score and deep sleep minutes">Sleep scores 69–85; deep sleep 8.5–55 min.</canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-grid full" style="margin-bottom:16px">
+    <div class="chart-card">
+      <div class="chart-card-title">Sleep Stage Breakdown per Night — Light · Deep · REM · Awake (minutes)</div>
+      <div class="chart-card-sub">Fitbit-recorded sleep composition each night · from highest-score session</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#74C0FC"></div>Light sleep</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1864AB"></div>Deep sleep</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>REM sleep</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#DEE2E6"></div>Awake</div>
+      </div>
+      <div style="position:relative;height:260px"><canvas id="p1-stages" role="img" aria-label="P1 sleep stage stacked bar chart May 19 to June 1">Sleep stages breakdown showing light, deep, REM, and awake time per night.</canvas></div>
+    <div class="footnote" style="margin-top:10px">Fitbit recorded multiple sessions per night for P1 (up to 4) due to a known sync bug. Primary session selected using highest Fitbit sleep score per night — fully cross-referenced with session IDs for accuracy.</div>
     </div>
   </div>
 
@@ -266,36 +283,29 @@ table.survey tr:hover td{background:var(--gray-50)}
       <div class="comp-row">
         <div class="comp-metric">Avg Sleep Score</div>
         <div class="comp-values">
-          <div class="comp-val dial"><div class="comp-val-num">62.4</div><div class="comp-val-lbl">Dialysis nights</div></div>
-          <div class="comp-val non"><div class="comp-val-num">64.7</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
+          <div class="comp-val dial"><div class="comp-val-num">73.3</div><div class="comp-val-lbl">Dialysis nights</div></div>
+          <div class="comp-val non"><div class="comp-val-num">73.5</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
         </div>
       </div>
       <div class="comp-row">
         <div class="comp-metric">Avg Deep Sleep (min)</div>
         <div class="comp-values">
-          <div class="comp-val dial"><div class="comp-val-num">22.0</div><div class="comp-val-lbl">Dialysis nights</div></div>
-          <div class="comp-val non"><div class="comp-val-num">28.7</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
+          <div class="comp-val dial"><div class="comp-val-num">27.1</div><div class="comp-val-lbl">Dialysis nights</div></div>
+          <div class="comp-val non"><div class="comp-val-num">31.4</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
         </div>
       </div>
       <div class="comp-row">
-        <div class="comp-metric">Resting HR (sleep)</div>
+        <div class="comp-metric">Resting HR (bpm)</div>
         <div class="comp-values">
-          <div class="comp-val dial"><div class="comp-val-num">85.3</div><div class="comp-val-lbl">Dialysis nights</div></div>
-          <div class="comp-val non"><div class="comp-val-num">85.6</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
-        </div>
-      </div>
-      <div class="comp-row">
-        <div class="comp-metric">HRV – RMSSD (ms)</div>
-        <div class="comp-values">
-          <div class="comp-val dial"><div class="comp-val-num">11.1</div><div class="comp-val-lbl">Dialysis nights</div></div>
-          <div class="comp-val non"><div class="comp-val-num">11.6</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
+          <div class="comp-val dial"><div class="comp-val-num">86.6</div><div class="comp-val-lbl">Dialysis nights</div></div>
+          <div class="comp-val non"><div class="comp-val-num">86.6</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
         </div>
       </div>
     </div>
     <div class="chart-card" style="margin:0">
       <div class="chart-card-title">Sleep Score: Dialysis vs. Non-Dialysis</div>
       <div class="chart-card-sub">Per-night breakdown with day type</div>
-      <div style="position:relative;height:220px"><canvas id="p1-compare" role="img" aria-label="Bar chart comparing sleep scores on dialysis vs non-dialysis nights">Dialysis nights avg 62.4; non-dialysis avg 64.7.</canvas></div>
+      <div style="position:relative;height:220px"><canvas id="p1-compare" role="img" aria-label="Bar chart comparing sleep scores on dialysis vs non-dialysis nights">Dialysis nights avg 73.3; non-dialysis avg 73.5.</canvas></div>
     </div>
   </div>
 
@@ -356,69 +366,175 @@ table.survey tr:hover td{background:var(--gray-50)}
   <div class="info-strip">
     <div class="info-card" style="border-left-color:var(--purple)">
       <div class="info-label">Study Period</div>
-      <div class="info-value"><strong>May 26 – June 8, 2026</strong><br>14 days · Wearable Jun 2–7</div>
+      <div class="info-value"><strong>May 26 – June 15, 2026</strong><br>21 days · Wearable Jun 2–7</div>
     </div>
-    <div class="info-card" style="border-left-color:var(--purple)">
-      <div class="info-label">Wearable Schedule</div>
-      <div class="info-value"><strong>Jun 2 – Jun 7, 2026</strong><br>Fitbit / Google Health · 6 nights</div>
+    <div class="info-card dialysis">
+      <div class="info-label">Dialysis Schedule</div>
+      <div class="info-value orange"><strong>Tue · Thu · Sat</strong><br>Jun 2, 4, 6, 9, 11, 13, 16</div>
     </div>
     <div class="info-card" style="border-left-color:var(--green)">
       <div class="info-label">Survey Compliance</div>
-      <div class="info-value"><strong style="color:var(--green-dark)">13 / 13 surveys complete</strong><br>100% compliance · REDCap</div>
+      <div class="info-value"><strong style="color:var(--green-dark)">19 / 19 surveys complete</strong><br>100% compliance · REDCap</div>
     </div>
-    <div class="info-card" style="border-left-color:var(--blue)">
-      <div class="info-label">Exit Interview</div>
-      <div class="info-value"><strong>Not yet conducted</strong><br>Study ongoing as of Jun 8</div>
+    <div class="info-card" style="border-left-color:var(--red)">
+      <div class="info-label">⚠️ Device Failure</div>
+      <div class="info-value" style="color:var(--red)"><strong>Watch battery died</strong><br>No wearable data after Jun 7</div>
+    </div>
+  </div>
+
+  <div style="background:#FFF5F5;border:1px solid #FFC9C9;border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px">
+    <div style="font-size:20px;flex-shrink:0">🔋</div>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:#C92A2A;margin-bottom:4px">Device Failure — Fitbit Battery Died</div>
+      <div style="font-size:13px;color:#862E2E;line-height:1.6">The Fitbit watch battery died sometime after <strong>June 7, 2026</strong> and was confirmed dead on <strong>June 16, 2026</strong>. No heart rate, sleep stages, or sleep score data was recorded or synced for <strong>June 8–16</strong>. Survey data collection continued uninterrupted throughout this period. Wearable data collection to resume once device is recharged and re-synced.</div>
     </div>
   </div>
 
   <!-- KEY METRICS -->
-  <div class="section-title p2">Key Biometric Metrics</div>
+  <div class="section-title p2">Key Biometric Metrics — Wearable (Jun 2–7)</div>
   <div class="metric-grid">
     <div class="metric">
       <div class="metric-label">Avg Resting HR</div>
-      <div class="metric-val">79.1 <span class="metric-unit">bpm</span></div>
-      <div class="metric-note good">Strong declining trend ↓</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">Avg HRV (RMSSD)</div>
-      <div class="metric-val">14.7 <span class="metric-unit">ms</span></div>
-      <div class="metric-note good">Adequate autonomic recovery</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">Avg NREM Heart Rate</div>
-      <div class="metric-val">72.5 <span class="metric-unit">bpm</span></div>
-      <div class="metric-note good">Stable during sleep</div>
+      <div class="metric-val">74.5 <span class="metric-unit">bpm</span></div>
+      <div class="metric-note good">Declining trend ↓</div>
     </div>
     <div class="metric">
       <div class="metric-label">Avg Sleep Score</div>
-      <div class="metric-val">69.3 <span class="metric-unit">/100</span></div>
-      <div class="metric-note warn">Approaching good threshold (75)</div>
+      <div class="metric-val">73.9 <span class="metric-unit">/100</span></div>
+      <div class="metric-note good">Near good threshold (75)</div>
     </div>
     <div class="metric">
       <div class="metric-label">Avg Deep Sleep</div>
-      <div class="metric-val">44.8 <span class="metric-unit">min</span></div>
-      <div class="metric-note good">Adequate (target ≥90 min)</div>
+      <div class="metric-val">54.7 <span class="metric-unit">min</span></div>
+      <div class="metric-note good">Adequate per session</div>
     </div>
     <div class="metric">
-      <div class="metric-label">Avg Resp. Rate</div>
-      <div class="metric-val">15.4 <span class="metric-unit">br/min</span></div>
-      <div class="metric-note warn">Spike noted Jun 5 (18.4)</div>
+      <div class="metric-label">Avg Light Sleep</div>
+      <div class="metric-val">209.6 <span class="metric-unit">min</span></div>
+      <div class="metric-note">Majority of sleep time</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg REM Sleep</div>
+      <div class="metric-val">57.8 <span class="metric-unit">min</span></div>
+      <div class="metric-note good">Healthy REM duration</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg Awake Time</div>
+      <div class="metric-val">24.2 <span class="metric-unit">min</span></div>
+      <div class="metric-note good">Normal awake periods</div>
     </div>
   </div>
 
+  <!-- DIALYSIS vs NON-DIALYSIS (P2 wearable) -->
+  <div class="section-title p2">Dialysis vs. Non-Dialysis Night Comparison</div>
+  <div class="comparison-box">
+    <div class="comp-card">
+      <div class="comp-title" style="color:var(--gray-900)">📊 Sleep Quality Comparison — Jun 2–7</div>
+      <div class="comp-row">
+        <div class="comp-metric">Avg Sleep Score</div>
+        <div class="comp-values">
+          <div class="comp-val dial"><div class="comp-val-num">76.0</div><div class="comp-val-lbl">Dialysis nights</div></div>
+          <div class="comp-val non"><div class="comp-val-num">71.8</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
+        </div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-metric">Avg Deep Sleep (min)</div>
+        <div class="comp-values">
+          <div class="comp-val dial"><div class="comp-val-num">62.3</div><div class="comp-val-lbl">Dialysis nights</div></div>
+          <div class="comp-val non"><div class="comp-val-num">47.0</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
+        </div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-metric">Avg REM Sleep (min)</div>
+        <div class="comp-values">
+          <div class="comp-val dial"><div class="comp-val-num">68.7</div><div class="comp-val-lbl">Dialysis nights</div></div>
+          <div class="comp-val non"><div class="comp-val-num">38.0</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
+        </div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-metric">Resting HR (bpm)</div>
+        <div class="comp-values">
+          <div class="comp-val dial"><div class="comp-val-num">73.0</div><div class="comp-val-lbl">Dialysis nights</div></div>
+          <div class="comp-val non"><div class="comp-val-num">71.1</div><div class="comp-val-lbl">Non-dialysis nights</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-card" style="margin:0">
+      <div class="chart-card-title">Sleep Score: Dialysis vs. Non-Dialysis Nights</div>
+      <div class="chart-card-sub">Orange = dialysis day · Jun 2–7</div>
+      <div style="position:relative;height:220px"><canvas id="p2-compare" role="img" aria-label="P2 sleep score dialysis vs non-dialysis comparison">Dialysis nights avg 69.7; non-dialysis avg 69.0.</canvas></div>
+    </div>
+  </div>
+
+  <!-- WEARABLE CHARTS -->
+  <div class="section-title p2">Heart Rate Trends — Jun 2–7</div>
+  <div class="chart-grid full">
+    <div class="chart-card">
+      <div class="chart-card-title">Resting Heart Rate (bpm)</div>
+      <div class="chart-card-sub">Daily resting HR · orange = dialysis day</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Non-dialysis</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F76707"></div>Dialysis day</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="p2-rhr" role="img" aria-label="P2 resting heart rate trend June 2 to 7">Resting HR declined across Jun 2–7.</canvas></div>
+    </div>
+  </div>
+
+  <div class="section-title p2">Sleep Quality — Jun 2–7</div>
+  <div class="chart-grid full">
+    <div class="chart-card">
+      <div class="chart-card-title">Sleep Score &amp; Deep Sleep</div>
+      <div class="chart-card-sub">Orange = dialysis day · purple = non-dialysis</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Sleep score (non-dialysis)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F76707"></div>Sleep score (dialysis)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Deep sleep (min)</div>
+      </div>
+      <div style="position:relative;height:210px"><canvas id="p2-sleep" role="img" aria-label="P2 sleep score and deep sleep minutes June 2 to 7">Sleep scores 65–76; deep sleep 54–175 min.</canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-grid full" style="margin-bottom:16px">
+    <div class="chart-card">
+      <div class="chart-card-title">Sleep Stage Breakdown per Night — Light · Deep · REM · Awake (minutes)</div>
+      <div class="chart-card-sub">Fitbit-recorded sleep composition each night · orange border = dialysis day</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#74C0FC"></div>Light sleep</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1864AB"></div>Deep sleep</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>REM sleep</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#DEE2E6"></div>Awake</div>
+      </div>
+      <div style="position:relative;height:260px"><canvas id="p2-stages" role="img" aria-label="P2 sleep stage stacked bar chart June 2 to 7">Sleep stages breakdown showing light, deep, REM, and awake time per night.</canvas></div>
+    <div class="footnote" style="margin-top:10px">Each night shows the primary sleep session only. Fitbit recorded duplicate sessions (known sync bug). Primary session selected using highest Fitbit sleep score per night — fully cross-referenced with session IDs for accuracy. Jun 3 sleep was a daytime session (10:48 AM–2:33 PM).</div>
+    </div>
+  </div>
+
+  <!-- SURVEY vs WATCH -->
+  <div class="section-title p2">Survey vs. Watch: Sleep Duration — Jun 2–6 Overlap</div>
+  <div class="chart-card" style="margin-bottom:24px">
+    <div class="chart-card-title">Self-Reported Sleep (Survey) vs. Watch-Recorded Sleep (Fitbit)</div>
+    <div class="chart-card-sub">Hours P2 said she slept vs. what the Fitbit recorded · orange = dialysis night</div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Survey: self-reported</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Watch: Fitbit recorded</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#F76707;opacity:.5"></div>Dialysis night</div>
+    </div>
+    <div style="position:relative;height:260px"><canvas id="p2-cmp1" role="img" aria-label="Survey vs Fitbit sleep duration comparison June 2 to 6">Self-reported vs Fitbit-recorded sleep hours.</canvas></div>
+    <div class="footnote" style="margin-top:10px">Fitbit totals all sleep sessions across the day. Survey reflects self-reported main sleep window. Dialysis nights (Jun 2, 4, 6) marked in orange.</div>
+  </div>
+
   <!-- SURVEY SUMMARY METRICS -->
-  <div class="section-title p2">Survey Summary</div>
+  <div class="section-title p2">Survey Summary — May 26 – Jun 15</div>
   <div class="metric-grid">
     <div class="metric">
       <div class="metric-label">Subjective Sleep Quality</div>
       <div class="metric-val" style="font-size:16px;color:var(--green-dark)">Very Good</div>
-      <div class="metric-note good">All 13 nights rated Very Good</div>
+      <div class="metric-note good">All 19 nights rated Very Good</div>
     </div>
     <div class="metric">
       <div class="metric-label">Sleep Disturbances</div>
       <div class="metric-val" style="font-size:16px;color:var(--green-dark)">None</div>
-      <div class="metric-note good">No disturbances on any night</div>
+      <div class="metric-note good">No disturbances any night</div>
     </div>
     <div class="metric">
       <div class="metric-label">Sleep Medication</div>
@@ -426,119 +542,80 @@ table.survey tr:hover td{background:var(--gray-50)}
       <div class="metric-note good">No medication taken</div>
     </div>
     <div class="metric">
-      <div class="metric-label">Nap Days</div>
-      <div class="metric-val">6 <span class="metric-unit">/ 13 nights</span></div>
-      <div class="metric-note warn">46% of survey nights</div>
-    </div>
-    <div class="metric">
       <div class="metric-label">Avg Sleep Latency</div>
-      <div class="metric-val">26 <span class="metric-unit">min</span></div>
+      <div class="metric-val">30 <span class="metric-unit">min</span></div>
       <div class="metric-note warn">Slightly above normal (&lt;20 min)</div>
     </div>
     <div class="metric">
       <div class="metric-label">Avg Total Sleep</div>
-      <div class="metric-val">8h 53<span class="metric-unit">min</span></div>
+      <div class="metric-val">9h 08<span class="metric-unit">min</span></div>
       <div class="metric-note good">Good overall duration</div>
     </div>
-  </div>
-
-  <!-- HR CHARTS -->
-  <div class="section-title p2">Heart Rate Trends</div>
-  <div class="chart-grid full">
-    <div class="chart-card">
-      <div class="chart-card-title">Resting Heart Rate (bpm)</div>
-      <div class="chart-card-sub">Daily resting HR · Jun 2–7 · consistent downward trend</div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Resting HR</div>
-      </div>
-      <div style="position:relative;height:200px"><canvas id="p2-rhr" role="img" aria-label="P2 resting heart rate trend June 2 to 7, declining from 85.6 to 73.3 bpm">Resting HR declined from 85.6 to 73.3 bpm across Jun 2–7.</canvas></div>
+    <div class="metric">
+      <div class="metric-label">Total Surveys</div>
+      <div class="metric-val">19 <span class="metric-unit">/ 19</span></div>
+      <div class="metric-note good">100% compliance</div>
     </div>
   </div>
 
-  <!-- SLEEP CHARTS -->
-  <div class="section-title p2">Sleep Quality</div>
-  <div class="chart-grid full">
-    <div class="chart-card">
-      <div class="chart-card-title">Sleep Score &amp; Deep Sleep</div>
-      <div class="chart-card-sub">Wearable-derived nightly scores · Jun 2–7</div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Sleep score (/100)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Deep sleep (min)</div>
-      </div>
-      <div style="position:relative;height:200px"><canvas id="p2-sleep" role="img" aria-label="P2 sleep score and deep sleep minutes June 2 to 7">Sleep scores 65–76; deep sleep 19–71 min.</canvas></div>
-    </div>
-  </div>
-
-  <!-- SURVEY vs WEARABLE COMPARISON -->
-  <div class="section-title p2">Survey vs. Watch: Sleep Duration — Jun 2–6 Overlap</div>
-
-  <div class="chart-card" style="margin-bottom:24px">
-    <div class="chart-card-title">Self-Reported Sleep (Survey) vs. Watch-Recorded Sleep (Fitbit)</div>
-    <div class="chart-card-sub">How many hours P2 said she slept vs. what the Fitbit actually recorded each night</div>
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Survey: self-reported sleep</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Watch: Fitbit recorded sleep</div>
-    </div>
-    <div style="position:relative;height:260px"><canvas id="p2-cmp1" role="img" aria-label="Survey vs Fitbit sleep duration June 2 to 6">Self-reported vs Fitbit-recorded sleep hours for Jun 2–6.</canvas></div>
-    <div class="footnote" style="margin-top:10px">Fitbit totals all sleep sessions across the day (including naps). Survey reflects participant's self-reported main sleep period. Differences may reflect daytime napping captured by watch but not included in survey response.</div>
-  </div>
-
-  <!-- SURVEY DATA -->
-  <div class="section-title p2">Daily Survey Data — May 26 – June 8</div>
+  <!-- SURVEY CHARTS -->
+  <div class="section-title p2">Daily Survey Data — May 26 – Jun 15</div>
   <div class="chart-grid">
     <div class="chart-card">
       <div class="chart-card-title">Total Sleep Duration per Night</div>
-      <div class="chart-card-sub">Self-reported hours slept · orange = nap taken previous day</div>
+      <div class="chart-card-sub">Self-reported · orange = dialysis day · purple = non-dialysis</div>
       <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>No nap</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#F76707"></div>Nap taken previous day</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#7950F2"></div>Non-dialysis</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F76707"></div>Dialysis day</div>
       </div>
-      <div style="position:relative;height:200px"><canvas id="p2-qual" role="img" aria-label="P2 total sleep duration with nap days highlighted">Sleep duration ranged 6h 30min–10h 45min; nap days shown in orange.</canvas></div>
+      <div style="position:relative;height:200px"><canvas id="p2-qual" role="img" aria-label="P2 total sleep duration per night">Total sleep per night with dialysis days in orange.</canvas></div>
     </div>
     <div class="chart-card">
       <div class="chart-card-title">Total Sleep Duration &amp; Sleep Latency</div>
-      <div class="chart-card-sub">Self-reported total hours slept and minutes to fall asleep each night</div>
+      <div class="chart-card-sub">Sleep hours (bars) and time to fall asleep (line) per night</div>
       <div class="legend">
         <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Total sleep (hrs)</div>
         <div class="legend-item"><div class="legend-dot" style="background:#F76707"></div>Latency (min)</div>
       </div>
-      <div style="position:relative;height:200px"><canvas id="p2-latency" role="img" aria-label="P2 total sleep duration and latency chart">Total sleep ranged 6.5–10.75 hrs; latency 5–60 min.</canvas></div>
+      <div style="position:relative;height:200px"><canvas id="p2-latency" role="img" aria-label="P2 total sleep and latency chart">Total sleep and latency across all survey dates.</canvas></div>
     </div>
   </div>
-
-
 
   <!-- SURVEY TABLE -->
-  <div class="survey-section">
-    <div class="section-title p2" style="margin-top:4px">Survey Response Details</div>
-    <div class="survey-table-wrap">
-      <table class="survey">
-        <thead>
-          <tr>
-            <th>#</th><th>Date</th><th>Bedtime</th><th>Wake Time</th>
-            <th>Latency (min)</th><th>Total Sleep</th><th>Sleep Quality</th>
-            <th>Nap Prev. Day</th><th>Disturbances</th><th>Watch Worn</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>1</td><td>May 26</td><td>9:30 PM</td><td>10:00 AM</td><td>5</td><td>10h 05min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>Yes</td><td>None</td><td>✓</td></tr>
-          <tr><td>2</td><td>May 27</td><td>7:00 PM</td><td>9:20 AM</td><td>10</td><td>9h 52min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>Yes</td><td>None</td><td>✓</td></tr>
-          <tr><td>3</td><td>May 28</td><td>11:10 PM</td><td>10:00 AM</td><td>30</td><td>10h 10min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
-          <tr><td>4</td><td>May 29</td><td>11:00 PM</td><td>8:30 AM</td><td>10</td><td>6h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
-          <tr><td>5</td><td>May 30</td><td>10:45 PM</td><td>10:00 AM</td><td>60</td><td>6h 45min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
-          <tr><td>6</td><td>May 31</td><td>3:00 AM</td><td>10:30 AM</td><td>30</td><td>7h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>Yes</td><td>None</td><td>✓</td></tr>
-          <tr><td>7</td><td>Jun 1</td><td>3:30 AM</td><td>10:20 AM</td><td>30</td><td>7h 20min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
-          <tr style="background:#F3F0FF"><td>8</td><td>Jun 2 ⚡</td><td>10:30 PM</td><td>10:00 AM</td><td>15</td><td>9h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
-          <tr style="background:#F3F0FF"><td>9</td><td>Jun 3 ⚡</td><td>5:00 PM</td><td>10:00 AM</td><td>30</td><td>7h 00min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>Yes</td><td>None</td><td>✓</td></tr>
-          <tr style="background:#F3F0FF"><td>10</td><td>Jun 4 ⚡</td><td>11:15 PM</td><td>10:00 AM</td><td>30</td><td>10h 00min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
-          <tr style="background:#F3F0FF"><td>11</td><td>Jun 5 ⚡</td><td>6:15 PM</td><td>10:00 AM</td><td>30</td><td>10h 20min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>Yes</td><td>None</td><td>✓</td></tr>
-          <tr style="background:#F3F0FF"><td>12</td><td>Jun 6 ⚡</td><td>6:00 PM</td><td>10:26 AM</td><td>30</td><td>10h 45min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>Yes</td><td>None</td><td>✓</td></tr>
-          <tr><td>13</td><td>Jun 8</td><td>11:00 PM</td><td>10:30 AM</td><td>40</td><td>10h 00min</td><td><span class="qual-badge qual-high">Very Good</span></td><td>No</td><td>None</td><td>✓</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="footnote" style="margin-top:8px">⚡ = wearable data also available for this date &nbsp;|&nbsp; Sleep quality rated as Very Good on all 13 nights &nbsp;|&nbsp; No sleep disturbances or sleep medication reported on any night &nbsp;|&nbsp; Sleep duration data entry anomalies on May 26, Jun 3 and Jun 4 corrected · Latency anomalies on May 31 and Jun 4 corrected to 30 min</div>
+  <div class="section-title p2" style="margin-top:4px">Survey Response Details</div>
+  <div class="survey-table-wrap">
+    <table class="survey">
+      <thead>
+        <tr>
+          <th>#</th><th>Date</th><th>Bedtime</th><th>Wake Time</th>
+          <th>Latency (min)</th><th>Total Sleep</th><th>Sleep Quality</th>
+          <th>Dialysis Day</th><th>Watch Worn</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>May 26</td><td>9:30 PM</td><td>10:00 AM</td><td>5</td><td>10h 05min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-unk">—</span></td><td>✓</td></tr>
+        <tr><td>2</td><td>May 27</td><td>7:00 PM</td><td>9:20 AM</td><td>10</td><td>9h 52min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-unk">—</span></td><td>✓</td></tr>
+        <tr><td>3</td><td>May 28</td><td>11:10 PM</td><td>10:00 AM</td><td>30</td><td>10h 10min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-unk">—</span></td><td>✓</td></tr>
+        <tr><td>4</td><td>May 29</td><td>11:00 PM</td><td>8:30 AM</td><td>10</td><td>6h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-unk">—</span></td><td>✓</td></tr>
+        <tr><td>5</td><td>May 30</td><td>10:45 PM</td><td>10:00 AM</td><td>60</td><td>6h 45min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-unk">—</span></td><td>✓</td></tr>
+        <tr><td>6</td><td>May 31</td><td>3:00 AM</td><td>10:30 AM</td><td>30</td><td>7h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-unk">—</span></td><td>✓</td></tr>
+        <tr><td>7</td><td>Jun 1</td><td>3:30 AM</td><td>10:20 AM</td><td>30</td><td>7h 20min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-unk">—</span></td><td>✓</td></tr>
+        <tr style="background:#FFF4E6"><td>8</td><td>Jun 2 ⚡</td><td>10:30 PM</td><td>10:00 AM</td><td>15</td><td>9h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-dial">💉 Dialysis</span></td><td>✓</td></tr>
+        <tr style="background:#F3F0FF"><td>9</td><td>Jun 3 ⚡</td><td>5:00 PM</td><td>10:00 AM</td><td>30</td><td>7h 00min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-non">Non-dialysis</span></td><td>✓</td></tr>
+        <tr style="background:#FFF4E6"><td>10</td><td>Jun 4 ⚡</td><td>11:15 PM</td><td>10:00 AM</td><td>30</td><td>7h 00min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-dial">💉 Dialysis</span></td><td>✓</td></tr>
+        <tr style="background:#F3F0FF"><td>11</td><td>Jun 5 ⚡</td><td>6:15 PM</td><td>10:00 AM</td><td>30</td><td>10h 20min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-non">Non-dialysis</span></td><td>✓</td></tr>
+        <tr style="background:#FFF4E6"><td>12</td><td>Jun 6 ⚡</td><td>6:00 PM</td><td>10:26 AM</td><td>30</td><td>10h 45min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-dial">💉 Dialysis</span></td><td>✓</td></tr>
+        <tr><td>13</td><td>Jun 8</td><td>11:00 PM</td><td>10:30 AM</td><td>40</td><td>10h 00min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-non">Non-dialysis</span></td><td>✓</td></tr>
+        <tr style="background:#FFF4E6"><td>14</td><td>Jun 9</td><td>1:00 AM</td><td>10:00 AM</td><td>30</td><td>9h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-dial">💉 Dialysis</span></td><td>✓</td></tr>
+        <tr><td>15</td><td>Jun 10</td><td>11:30 PM</td><td>12:00 PM</td><td>30</td><td>7h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-non">Non-dialysis</span></td><td>✓</td></tr>
+        <tr style="background:#FFF4E6"><td>16</td><td>Jun 11</td><td>11:00 PM</td><td>10:00 AM</td><td>30</td><td>10h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-dial">💉 Dialysis</span></td><td>✓</td></tr>
+        <tr><td>17</td><td>Jun 12</td><td>1:00 AM</td><td>12:30 PM</td><td>30</td><td>11h 00min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-non">Non-dialysis</span></td><td>✓</td></tr>
+        <tr><td>18</td><td>Jun 14</td><td>11:00 PM</td><td>10:00 AM</td><td>20</td><td>10h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-non">Non-dialysis</span></td><td>✓</td></tr>
+        <tr><td>19</td><td>Jun 15</td><td>2:20 AM</td><td>12:18 PM</td><td>60</td><td>7h 30min</td><td><span class="qual-badge qual-high">Very Good</span></td><td><span class="day-non">Non-dialysis</span></td><td>✓</td></tr>
+      </tbody>
+    </table>
   </div>
+  <div class="footnote" style="margin-top:8px">⚡ = wearable data also available · 💉 = dialysis day · All 19 nights rated "Very Good" · No sleep disturbances or medication reported · Jun 13 &amp; 16 are dialysis days but no survey submitted those dates</div>
 
 </div><!-- end p2 -->
 </div><!-- end main -->
@@ -559,13 +636,14 @@ function baseOpts(extra) {
 }
 
 // ── P1 Dialysis markers ───────────────────────────────────
-const p1Dates = ['5/19','5/20','5/21','5/22','5/23','5/24','5/25','5/26','5/27','5/28','5/29','5/30','5/31','6/1'];
-const p1DialDays = new Set([0,2,4,7,9]); // indices of dialysis days
-const p1RHR = [88.9,86.7,88.0,87.3,85.9,86.4,85.1,83.4,83.6,83.0,85.0,86.0,85.0,87.3];
+// Highest-score session per night, cross-referenced by sleep_id between
+// UserSleepScores and UserSleepStages CSVs
+const p1Dates    = ['5/19','5/20','5/21','5/22','5/23','5/25','5/26','5/27','5/28','5/30','5/31','6/1'];
+const p1DialIdx  = new Set([0,2,4,6,8]); // 5/19,5/21,5/23,5/26,5/28
+const p1RHR      = [91,87,89,88,86,87,83,84,84,87,85,88];
 
-// Annotation-style: color each bar based on dialysis day
-const p1RHRColors = p1Dates.map((_,i)=> p1DialDays.has(i)?'rgba(247,103,7,0.85)':'rgba(16,152,173,0.8)');
-const p1RHRBorder = p1Dates.map((_,i)=> p1DialDays.has(i)?'#C2510A':'#0B7285');
+const p1RHRColors = p1Dates.map((_,i)=> p1DialIdx.has(i)?'rgba(247,103,7,0.85)':'rgba(16,152,173,0.8)');
+const p1RHRBorder = p1Dates.map((_,i)=> p1DialIdx.has(i)?'#C2510A':'#0B7285');
 
 new Chart(document.getElementById('p1-rhr'), {
   type:'bar',
@@ -573,30 +651,52 @@ new Chart(document.getElementById('p1-rhr'), {
     {label:'Resting HR',data:p1RHR,backgroundColor:p1RHRColors,borderColor:p1RHRBorder,borderWidth:1,borderRadius:4}
   ]},
   options:{...baseOpts(),scales:{
-    x:{grid:{color:gc},ticks:{color:tc,font:{size:10},maxRotation:45,autoSkip:false}},
+    x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},
     y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:75,max:95,title:{display:true,text:'bpm',color:tc,font:{size:10}}}
   }}
 });
 
-// P1 Sleep
-const p1SleepDates = ['5/20','5/21','5/22','5/23','5/25','5/26','5/27','5/28','5/30','5/31','6/1'];
-const p1Scores =     [62,    57,    63,    61,    63,    69,    61,    63,    60,    69,    66];
-const p1Deep =       [34,    31,    39,    19,    28,    30,    15,    21,    27,    35,    27];
-const p1SleepDialDays = new Set([1,3,5,7]); // 5/21,5/23,5/26,5/28
-const p1ScoreColors = p1SleepDates.map((_,i)=> p1SleepDialDays.has(i)?'rgba(247,103,7,0.8)':'rgba(121,80,242,0.8)');
+// P1 Sleep score + deep sleep — highest-score session per night
+const p1Scores = [76.5,73.4,70.3,69.7,70.9,71.9,73.0,71.7,75.6,68.5,84.7,74.9];
+const p1Deep   = [39.5,28.0,17.5,24.0,8.5, 24.5,37.0,13.0,33.0,54.5,30.5,45.5];
+const p1ScoreColors = p1Dates.map((_,i)=> p1DialIdx.has(i)?'rgba(247,103,7,0.8)':'rgba(121,80,242,0.8)');
 
 new Chart(document.getElementById('p1-sleep'), {
   type:'bar',
-  data:{labels:p1SleepDates,datasets:[
+  data:{labels:p1Dates,datasets:[
     {label:'Sleep score',data:p1Scores,backgroundColor:p1ScoreColors,borderRadius:4,yAxisID:'y',order:2},
     {label:'Deep sleep (min)',data:p1Deep,type:'line',borderColor:'#1098AD',pointRadius:4,pointBackgroundColor:'#1098AD',tension:0.35,fill:false,yAxisID:'y2',order:1}
   ]},
   options:{responsive:true,maintainAspectRatio:false,
     plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
     scales:{
-      x:{grid:{color:gc},ticks:{color:tc,font:{size:10},maxRotation:45,autoSkip:false}},
-      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:40,max:80,title:{display:true,text:'Score /100',color:tc,font:{size:10}}},
-      y2:{position:'right',grid:{display:false},ticks:{color:tc,font:{size:10}},min:0,max:50,title:{display:true,text:'Deep sleep (min)',color:tc,font:{size:10}}}
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:0,max:100,title:{display:true,text:'Score /100',color:tc,font:{size:10}}},
+      y2:{position:'right',grid:{display:false},ticks:{color:tc,font:{size:10}},min:0,max:60,title:{display:true,text:'Deep sleep (min)',color:tc,font:{size:10}}}
+    }
+  }
+});
+
+// P1 Sleep stages stacked bar — highest-score session per night
+new Chart(document.getElementById('p1-stages'), {
+  type:'bar',
+  data:{labels:p1Dates,datasets:[
+    {label:'Light sleep',data:[281.0,258.0,131.5,232.0,285.0,181.0,272.5,129.5,202.0,129.5,227.5,232.5],backgroundColor:'rgba(116,192,252,0.85)',stack:'sleep'},
+    {label:'Deep sleep', data:[39.5, 28.0, 17.5, 24.0, 8.5,  24.5, 37.0, 13.0, 33.0, 54.5, 30.5, 45.5], backgroundColor:'rgba(24,100,171,0.9)', stack:'sleep'},
+    {label:'REM sleep',  data:[13.0, 34.0, 34.5, 50.0, 43.0, 37.5, 31.5, 48.5, 45.5, 19.0, 85.5, 48.0], backgroundColor:'rgba(121,80,242,0.85)',stack:'sleep'},
+    {label:'Awake',      data:[8.5,  16.0, 3.5,  26.0, 16.5, 14.0, 22.0, 20.0, 9.5,  7.0,  5.5,  7.0],  backgroundColor:'rgba(222,226,230,0.7)',stack:'sleep'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{
+      label:function(ctx){
+        const h=Math.floor(ctx.raw/60);const m=Math.round(ctx.raw%60);
+        return `${ctx.dataset.label}: ${h>0?h+'h ':''}${m}min`;
+      }
+    }}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},
+      y:{grid:{color:gc},stacked:true,ticks:{color:tc,font:{size:10},callback:v=>`${Math.round(v/60)}h`},
+         title:{display:true,text:'Minutes',color:tc,font:{size:10}}}
     }
   }
 });
@@ -605,11 +705,11 @@ new Chart(document.getElementById('p1-sleep'), {
 new Chart(document.getElementById('p1-compare'), {
   type:'bar',
   data:{
-    labels:['5/21 (D)','5/22','5/23 (D)','5/25','5/26 (D)','5/27','5/28 (D)','5/30','5/31','6/1'],
+    labels:['5/19 (D)','5/20','5/21 (D)','5/22','5/23 (D)','5/25','5/26 (D)','5/27','5/28 (D)','5/30','5/31','6/1'],
     datasets:[{
       label:'Sleep score',
-      data:[57,63,61,63,69,61,63,60,69,66],
-      backgroundColor:['rgba(247,103,7,.8)','rgba(16,152,173,.8)','rgba(247,103,7,.8)','rgba(16,152,173,.8)','rgba(247,103,7,.8)','rgba(16,152,173,.8)','rgba(247,103,7,.8)','rgba(16,152,173,.8)','rgba(16,152,173,.8)','rgba(16,152,173,.8)'],
+      data:p1Scores,
+      backgroundColor:p1ScoreColors,
       borderRadius:5
     }]
   },
@@ -617,125 +717,154 @@ new Chart(document.getElementById('p1-compare'), {
     plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
     scales:{
       x:{grid:{color:gc},ticks:{color:tc,font:{size:9},maxRotation:50,autoSkip:false}},
-      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:40,max:80}
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:0,max:100}
     }
   }
 });
 
 // ── P2 CHARTS ────────────────────────────────────────────
-const p2RHRDates = ['6/2','6/3','6/4','6/5','6/6','6/7'];
-const p2RHR      = [85.6, 82.4, 80.4, 77.1, 75.5, 73.3];
+const p2WearDates = ['6/2','6/3','6/4','6/5','6/6','6/7'];
+const p2DialIdx   = new Set([0,2,4]); // Jun 2,4,6 = dialysis
+const p2RHR       = [88, 69, 71, 73, 74, 72]; // resting HR from highest-score session per night
+const p2RHRColors = p2WearDates.map((_,i)=>p2DialIdx.has(i)?'rgba(247,103,7,0.85)':'rgba(121,80,242,0.8)');
+const p2RHRBorder = p2WearDates.map((_,i)=>p2DialIdx.has(i)?'#C2510A':'#5F3DC4');
 
+// P2 dialysis comparison sleep score
+new Chart(document.getElementById('p2-compare'), {
+  type:'bar',
+  data:{labels:['6/2 (D)','6/3','6/4 (D)','6/5','6/6 (D)','6/7'],
+    datasets:[{label:'Sleep score',data:[68,65,72,76,69,66],
+      backgroundColor:['rgba(247,103,7,.8)','rgba(121,80,242,.8)','rgba(247,103,7,.8)','rgba(121,80,242,.8)','rgba(247,103,7,.8)','rgba(121,80,242,.8)'],
+      borderRadius:5}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+    scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:10}}},
+            y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:55,max:85}}}
+});
+
+// P2 Resting HR
 new Chart(document.getElementById('p2-rhr'), {
   type:'bar',
-  data:{labels:p2RHRDates,datasets:[
-    {label:'Resting HR',data:p2RHR,backgroundColor:'rgba(121,80,242,0.8)',borderColor:'#5F3DC4',borderWidth:1,borderRadius:4}
+  data:{labels:p2WearDates,datasets:[
+    {label:'Resting HR',data:p2RHR,backgroundColor:p2RHRColors,borderColor:p2RHRBorder,borderWidth:1,borderRadius:4}
   ]},
   options:{...baseOpts(),scales:{
     x:{grid:{color:gc},ticks:{color:tc,font:{size:11}}},
-    y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},min:65,max:90,title:{display:true,text:'bpm',color:tc,font:{size:10}}}
+    y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:60,max:85,title:{display:true,text:'bpm',color:tc,font:{size:10}}}
   }}
 });
 
-// P2 Sleep score + deep sleep
-const p2Dates  = ['6/2','6/3','6/4','6/5','6/6','6/7'];
-const p2Scores = [68,   65,   72,   76,   69,   66];
-const p2Deep   = [65,   21,   49,   71,   19,   45];
+// P2 Sleep score + deep sleep with dialysis markers
+const p2Scores = [74.6,76.6,73.2,69.1,80.2,69.8]; // highest-score session per night
+const p2Deep   = [65.5,38.0,60.0,75.0,61.5,28.0]; // from highest-score session per night
+const p2ScoreColors = p2WearDates.map((_,i)=>p2DialIdx.has(i)?'rgba(247,103,7,0.8)':'rgba(121,80,242,0.8)');
 
 new Chart(document.getElementById('p2-sleep'), {
   type:'bar',
-  data:{labels:p2Dates,datasets:[
-    {label:'Sleep score',data:p2Scores,backgroundColor:'rgba(121,80,242,0.75)',borderRadius:5,yAxisID:'y',order:2},
-    {label:'Deep sleep (min)',data:p2Deep,type:'line',borderColor:'#1098AD',pointRadius:4,pointBackgroundColor:'#1098AD',tension:0.35,fill:false,yAxisID:'y2',order:1}
+  data:{labels:p2WearDates,datasets:[
+    {label:'Sleep score',data:p2Scores,backgroundColor:p2ScoreColors,borderRadius:4,yAxisID:'y',order:2},
+    {label:'Deep sleep (min)',data:p2Deep,type:'line',borderColor:'#1098AD',pointRadius:5,pointBackgroundColor:'#1098AD',tension:0.35,fill:false,yAxisID:'y2',order:1}
   ]},
   options:{responsive:true,maintainAspectRatio:false,
     plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
     scales:{
       x:{grid:{color:gc},ticks:{color:tc,font:{size:11}}},
-      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:50,max:85,title:{display:true,text:'Score /100',color:tc,font:{size:10}}},
-      y2:{position:'right',grid:{display:false},ticks:{color:tc,font:{size:10}},min:0,max:80,title:{display:true,text:'Deep sleep (min)',color:tc,font:{size:10}}}
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:0,max:100,title:{display:true,text:'Score /100',color:tc,font:{size:10}}},
+      y2:{position:'right',grid:{display:false},ticks:{color:tc,font:{size:10}},min:0,max:100,title:{display:true,text:'Deep sleep (min)',color:tc,font:{size:10}}}
     }
   }
 });
 
-// P2 Total sleep duration bars — orange if nap taken that day
-const p2SurveyDates  = ['5/26','5/27','5/28','5/29','5/30','5/31','6/1','6/2','6/3','6/4','6/5','6/6','6/8'];
-const p2TotalSleepHrs= [10.08, 9.87, 10.17, 6.50, 6.75, 7.50, 7.33, 9.50, 7.00, 10.00, 10.33, 10.75, 10.00];
-// Nap taken previous day: Yes on 5/26,5/27,5/31,6/3,6/5,6/6 → indices 0,1,5,8,10,11
-const napDays = new Set([0,1,5,8,10,11]);
-const napColors = p2TotalSleepHrs.map((_,i)=> napDays.has(i)?'rgba(247,103,7,0.82)':'rgba(121,80,242,0.75)');
-
-new Chart(document.getElementById('p2-qual'), {
+// P2 Sleep stages stacked bar — deduplicated primary session per night
+new Chart(document.getElementById('p2-stages'), {
   type:'bar',
-  data:{labels:p2SurveyDates,datasets:[
-    {label:'Total sleep (hrs)',data:p2TotalSleepHrs,backgroundColor:napColors,borderRadius:4}
+  data:{labels:p2WearDates,datasets:[
+    {label:'Light sleep',data:[231.0, 135.5, 262.5, 184.0, 270.0, 174.5],backgroundColor:'rgba(116,192,252,0.85)',stack:'sleep'},
+    {label:'Deep sleep', data:[65.5,  38.0,  60.0,  75.0,  61.5,  28.0], backgroundColor:'rgba(24,100,171,0.9)', stack:'sleep'},
+    {label:'REM sleep',  data:[70.5,  44.0,  66.0,  24.0,  69.5,  72.5], backgroundColor:'rgba(121,80,242,0.85)',stack:'sleep'},
+    {label:'Awake',      data:[20.0,  7.5,   34.5,  25.0,  15.0,  43.0], backgroundColor:'rgba(222,226,230,0.7)',stack:'sleep'}
   ]},
   options:{responsive:true,maintainAspectRatio:false,
     plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{
       label:function(ctx){
-        const h=Math.floor(ctx.raw);const m=Math.round((ctx.raw-h)*60);
-        const nap=napDays.has(ctx.dataIndex)?' (nap prev. day)':'';
-        return `Total sleep: ${h}h ${m}min${nap}`;
+        const h=Math.floor(ctx.raw/60);const m=Math.round(ctx.raw%60);
+        return `${ctx.dataset.label}: ${h>0?h+'h ':''}${m}min`;
       }
     }}},
     scales:{
-      x:{grid:{color:gc},ticks:{color:tc,font:{size:10},maxRotation:45,autoSkip:false}},
-      y:{grid:{color:gc},ticks:{color:tc,font:{size:10},callback:v=>`${v}h`},min:0,max:12,title:{display:true,text:'Hours slept',color:tc,font:{size:10}}}
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:11}}},
+      y:{grid:{color:gc},stacked:true,ticks:{color:tc,font:{size:10},callback:v=>`${Math.round(v/60)}h`},
+         title:{display:true,text:'Minutes',color:tc,font:{size:10}}}
     }
   }
 });
 
-// P2 Total sleep duration (decimal hrs) + Latency overlay
-const p2TotalSleep = p2TotalSleepHrs;
-const p2Latency    = [5,     10,   30,    10,   60,   30,   30,   15,   30,   30,    30,    30,    40];
-
-new Chart(document.getElementById('p2-latency'), {
-  type:'bar',
-  data:{labels:p2SurveyDates,datasets:[
-    {label:'Total sleep (hrs)',data:p2TotalSleep,backgroundColor:'rgba(16,152,173,0.75)',borderRadius:3,yAxisID:'y'},
-    {label:'Latency (min)',data:p2Latency,type:'line',borderColor:'#F76707',pointRadius:4,pointBackgroundColor:'#F76707',tension:0.3,fill:false,yAxisID:'y2'}
-  ]},
-  options:{responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{
-      label:function(ctx){
-        if(ctx.datasetIndex===0){
-          const h=Math.floor(ctx.raw);const m=Math.round((ctx.raw-h)*60);
-          return `Total sleep: ${h}h ${m}min`;
-        }
-        return `Latency: ${ctx.raw} min`;
-      }
-    }}},
-    scales:{
-      x:{grid:{color:gc},ticks:{color:tc,font:{size:10},maxRotation:45,autoSkip:false}},
-      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:0,max:13,title:{display:true,text:'Total sleep (hrs)',color:tc,font:{size:10}}},
-      y2:{position:'right',grid:{display:false},ticks:{color:tc,font:{size:10}},min:0,max:80,title:{display:true,text:'Latency (min)',color:tc,font:{size:10}}}
-    }
-  }
-});
-
-// ── P2 COMPARISON: Survey vs Watch sleep hours ────────────
-const cmpDates    = ['Jun 2','Jun 3','Jun 4','Jun 5','Jun 6'];
-const cmpSurveyH  = [9.5,   7.0,   10.0,  10.33, 10.75]; // self-reported
-const cmpFitbitH  = [11.9,  12.1,  12.42,  9.33, 12.75]; // Fitbit total (all sessions)
+// P2 Survey vs Watch comparison (Jun 2-6)
+const cmpDates   = ['Jun 2 💉','Jun 3','Jun 4 💉','Jun 5','Jun 6 💉'];
+const cmpSurveyH = [9.5,  7.0,  7.0,  10.33, 10.75];
+const cmpFitbitH = [6.45, 3.75, 7.05, 5.13, 6.93]; // primary session only
+const cmpSurveyColors = ['rgba(247,103,7,0.8)','rgba(121,80,242,0.8)','rgba(247,103,7,0.8)','rgba(121,80,242,0.8)','rgba(247,103,7,0.8)'];
+const cmpFitbitColors  = ['rgba(247,103,7,0.4)','rgba(16,152,173,0.8)','rgba(247,103,7,0.4)','rgba(16,152,173,0.8)','rgba(247,103,7,0.4)'];
 
 new Chart(document.getElementById('p2-cmp1'), {
   type:'bar',
   data:{labels:cmpDates,datasets:[
-    {label:'Survey: self-reported',data:cmpSurveyH,backgroundColor:'rgba(121,80,242,0.8)',borderRadius:5,barPercentage:.38,categoryPercentage:.85},
-    {label:'Watch: Fitbit recorded',data:cmpFitbitH,backgroundColor:'rgba(16,152,173,0.8)',borderRadius:5,barPercentage:.38,categoryPercentage:.85}
+    {label:'Survey: self-reported',data:cmpSurveyH,backgroundColor:cmpSurveyColors,borderRadius:5,barPercentage:.38,categoryPercentage:.85},
+    {label:'Watch: Fitbit recorded',data:cmpFitbitH,backgroundColor:cmpFitbitColors,borderRadius:5,barPercentage:.38,categoryPercentage:.85}
   ]},
   options:{responsive:true,maintainAspectRatio:false,
     plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{
-      label:function(ctx){
-        const h=Math.floor(ctx.raw);const m=Math.round((ctx.raw-h)*60);
-        const lbl=ctx.datasetIndex===0?'Survey':'Watch';
-        return `${lbl}: ${h}h ${m}min`;
-      }
+      label:function(ctx){const h=Math.floor(ctx.raw);const m=Math.round((ctx.raw-h)*60);
+        const lbl=ctx.datasetIndex===0?'Survey':'Watch';return `${lbl}: ${h}h ${m}min`;}
+    }}},
+    scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:11}}},
+            y:{grid:{color:gc},ticks:{color:tc,font:{size:11},callback:v=>`${v}h`},min:0,max:12,
+               title:{display:true,text:'Hours of sleep',color:tc,font:{size:11}}}}
+  }
+});
+
+// P2 Survey total sleep — all 19 nights, dialysis in orange
+const p2SurveyDates = ['5/26','5/27','5/28','5/29','5/30','5/31','6/1','6/2','6/3','6/4','6/5','6/6','6/8','6/9','6/10','6/11','6/12','6/14','6/15'];
+const p2TotalSleepHrs=[10.08,9.87,10.17,6.50,6.75,7.50,7.33,9.50,7.00,7.00,10.33,10.75,10.00,9.50,7.50,10.50,11.00,10.50,7.50];
+// Dialysis days in survey dates: idx 7(6/2),9(6/4),11(6/6),13(6/9),15(6/11)
+const survDialIdx = new Set([7,9,11,13,15]);
+const survColors = p2TotalSleepHrs.map((_,i)=>survDialIdx.has(i)?'rgba(247,103,7,0.82)':'rgba(121,80,242,0.75)');
+
+new Chart(document.getElementById('p2-qual'), {
+  type:'bar',
+  data:{labels:p2SurveyDates,datasets:[
+    {label:'Total sleep',data:p2TotalSleepHrs,backgroundColor:survColors,borderRadius:4}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{
+      label:function(ctx){const h=Math.floor(ctx.raw);const m=Math.round((ctx.raw-h)*60);
+        const dial=survDialIdx.has(ctx.dataIndex)?' 💉 dialysis day':'';
+        return `Total sleep: ${h}h ${m}min${dial}`;}
+    }}},
+    scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:false}},
+            y:{grid:{color:gc},ticks:{color:tc,font:{size:10},callback:v=>`${v}h`},min:0,max:13,
+               title:{display:true,text:'Hours slept',color:tc,font:{size:10}}}}
+  }
+});
+
+// P2 Latency + total sleep
+const p2Latency=[5,10,30,10,60,30,30,15,30,30,30,30,40,30,30,30,30,20,60];
+
+new Chart(document.getElementById('p2-latency'), {
+  type:'bar',
+  data:{labels:p2SurveyDates,datasets:[
+    {label:'Total sleep (hrs)',data:p2TotalSleepHrs,backgroundColor:'rgba(16,152,173,0.75)',borderRadius:3,yAxisID:'y'},
+    {label:'Latency (min)',data:p2Latency,type:'line',borderColor:'#F76707',pointRadius:3,pointBackgroundColor:'#F76707',tension:0.3,fill:false,yAxisID:'y2'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{
+      label:function(ctx){if(ctx.datasetIndex===0){const h=Math.floor(ctx.raw);const m=Math.round((ctx.raw-h)*60);return `Total sleep: ${h}h ${m}min`;}
+        return `Latency: ${ctx.raw} min`;}
     }}},
     scales:{
-      x:{grid:{color:gc},ticks:{color:tc,font:{size:12}}},
-      y:{grid:{color:gc},ticks:{color:tc,font:{size:11},callback:v=>`${v}h`},min:0,max:15,
-         title:{display:true,text:'Hours of sleep',color:tc,font:{size:11}}}
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:false}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:0,max:13,title:{display:true,text:'Total sleep (hrs)',color:tc,font:{size:10}}},
+      y2:{position:'right',grid:{display:false},ticks:{color:tc,font:{size:10}},min:0,max:80,title:{display:true,text:'Latency (min)',color:tc,font:{size:10}}}
     }
   }
 });
