@@ -1,8 +1,9 @@
 """
-NephroWear Study — Health Data Fetcher v7 FINAL
-All field names confirmed from API diagnostic runs
+NephroWear Study — Health Data Fetcher v8
+Fetches data AND injects it directly into index.html
+so no fetch() call needed — works with GitHub Pages
 """
-import os, json, requests
+import os, json, re, requests
 from datetime import datetime, timedelta, timezone
 
 CLIENT_ID     = os.environ["GOOGLE_CLIENT_ID"]
@@ -41,25 +42,14 @@ def fetch_all(token, endpoint):
     return points
 
 def process_sleep(points, start_date, end_date):
-    """
-    Confirmed field structure:
-    point.sleep.interval.startTime — session start
-    point.sleep.stages[] — stage segments with type/startTime/endTime
-    point.sleep.summary.stagesSummary — stage totals
-    No sleep score available via API (only in Takeout)
-    """
     daily = {}
     for p in points:
         sleep    = p.get("sleep", {})
         interval = sleep.get("interval", {})
         start_str = interval.get("startTime", "")
-        if not start_str:
-            continue
+        if not start_str: continue
         date = start_str[:10]
-        if date < start_date or date > end_date:
-            continue
-
-        # Parse stage durations
+        if date < start_date or date > end_date: continue
         light = deep = rem = awake = 0
         for stage in sleep.get("stages", []):
             stype = stage.get("type", "")
@@ -72,61 +62,70 @@ def process_sleep(points, start_date, end_date):
                 elif stype == "REM":   rem    += mins
                 elif stype == "AWAKE": awake  += mins
             except: continue
-
-        score = None  # Sleep score not available via Google Health API
-
         total = light + deep + rem
-        if date not in daily or (score and (daily[date].get("score") or 0) < score):
+        if date not in daily:
             daily[date] = {
-                "date": date,
-                "score": round(score, 1) if score else None,
-                "light": round(light, 1),
-                "deep":  round(deep, 1),
-                "rem":   round(rem, 1),
-                "awake": round(awake, 1),
-                "total_sleep_hrs": round(total / 60, 2),
+                "date": date, "score": None,
+                "light": round(light,1), "deep": round(deep,1),
+                "rem": round(rem,1), "awake": round(awake,1),
+                "total_sleep_hrs": round(total/60,2),
                 "start_time": start_str[11:16],
-                "end_time": interval.get("endTime", "")[11:16]
+                "end_time": interval.get("endTime","")[11:16]
             }
     return dict(sorted(daily.items()))
 
 def process_rhr(points, start_date, end_date):
-    """
-    Confirmed field structure:
-    point.dailyRestingHeartRate.date.year/month/day
-    point.dailyRestingHeartRate.beatsPerMinute (string)
-    """
     result = {}
     for p in points:
-        rhr      = p.get("dailyRestingHeartRate", {})
+        rhr = p.get("dailyRestingHeartRate", {})
         date_obj = rhr.get("date", {})
-        if not date_obj:
-            continue
+        if not date_obj: continue
         date = f"{date_obj['year']}-{date_obj['month']:02d}-{date_obj['day']:02d}"
         if start_date <= date <= end_date:
             bpm = rhr.get("beatsPerMinute")
-            if bpm:
-                result[date] = round(float(bpm), 1)
+            if bpm: result[date] = round(float(bpm), 1)
     return result
 
 def process_hrv(points, start_date, end_date):
-    """
-    Confirmed field structure:
-    point.dailyHeartRateVariability.date.year/month/day
-    point.dailyHeartRateVariability.averageHeartRateVariabilityMilliseconds (float)
-    """
     result = {}
     for p in points:
-        hrv      = p.get("dailyHeartRateVariability", {})
+        hrv = p.get("dailyHeartRateVariability", {})
         date_obj = hrv.get("date", {})
-        if not date_obj:
-            continue
+        if not date_obj: continue
         date = f"{date_obj['year']}-{date_obj['month']:02d}-{date_obj['day']:02d}"
         if start_date <= date <= end_date:
             rmssd = hrv.get("averageHeartRateVariabilityMilliseconds")
-            if rmssd:
-                result[date] = round(float(rmssd), 1)
+            if rmssd: result[date] = round(float(rmssd), 1)
     return result
+
+def inject_into_html(data):
+    """Inject p3 data directly into index.html as a JS variable"""
+    try:
+        with open("index.html", "r") as f:
+            html = f.read()
+
+        json_str = json.dumps(data, indent=2)
+
+        # Replace the injected data block
+        new_block = f"/* P3_DATA_START */\nwindow.P3_LIVE_DATA = {json_str};\n/* P3_DATA_END */"
+
+        if "/* P3_DATA_START */" in html:
+            html = re.sub(
+                r'/\* P3_DATA_START \*/.*?/\* P3_DATA_END \*/',
+                new_block, html, flags=re.DOTALL
+            )
+        else:
+            # Insert before closing </script>
+            html = html.replace(
+                "// Load P3 data on page load\nloadP3Data();",
+                f"{new_block}\n// Load P3 data on page load\nloadP3Data();"
+            )
+
+        with open("index.html", "w") as f:
+            f.write(html)
+        print("✓ Injected data into index.html")
+    except Exception as e:
+        print(f"✗ HTML injection failed: {e}")
 
 def main():
     now        = datetime.now(timezone.utc)
@@ -134,7 +133,7 @@ def main():
     start_date = (now - timedelta(days=30)).strftime("%Y-%m-%d")
 
     print("=" * 55)
-    print(f"NephroWear v7 FINAL — {now.strftime('%Y-%m-%d %H:%M UTC')}")
+    print(f"NephroWear v8 — {now.strftime('%Y-%m-%d %H:%M UTC')}")
     print(f"Fetching {start_date} → {end_date}")
     print("=" * 55)
 
@@ -151,29 +150,25 @@ def main():
 
         output = {
             "last_updated": now.strftime("%Y-%m-%d %H:%M UTC"),
-            "participant":  "P3",
-            "study_start":  "2026-07-06",
-            "sleep":        sleep_data,
-            "resting_hr":   rhr_data,
-            "hrv":          hrv_data
+            "participant": "P3", "study_start": "2026-07-06",
+            "sleep": sleep_data, "resting_hr": rhr_data, "hrv": hrv_data
         }
 
+        # Save JSON file
         with open("p3_data.json", "w") as f:
             json.dump(output, f, indent=2)
 
+        # Inject directly into HTML
+        inject_into_html(output)
+
         print(f"\n✅ SUCCESS")
         print(f"   Sleep: {len(sleep_data)} days")
-        print(f"   RHR:   {len(rhr_data)} days → {rhr_data}")
-        print(f"   HRV:   {len(hrv_data)} days → {hrv_data}")
-        for d, v in sleep_data.items():
-            print(f"   {d}: score={v['score']} deep={v['deep']}min total={v['total_sleep_hrs']}h")
+        print(f"   RHR:   {len(rhr_data)} days")
+        print(f"   HRV:   {len(hrv_data)} days")
 
     except Exception as e:
         print(f"\n❌ ERROR: {e}")
         import traceback; traceback.print_exc()
-        with open("p3_data.json", "w") as f:
-            json.dump({"last_updated": now.strftime("%Y-%m-%d %H:%M UTC"),
-                       "error": str(e), "sleep": {}, "resting_hr": {}, "hrv": {}}, f)
 
 if __name__ == "__main__":
     main()
