@@ -1,6 +1,7 @@
 """
-NephroWear Study — Health Data Fetcher v4
-Diagnostic version — tries multiple endpoint formats to find what works
+NephroWear Study — Health Data Fetcher v5
+Uses correct endpoints: GET without filter, date-filter in Python
+Sleep uses :reconcile to auto-deduplicate across devices
 """
 import os, json, requests
 from datetime import datetime, timedelta, timezone
@@ -19,98 +20,160 @@ def get_token():
     print("✓ Access token obtained")
     return r.json()["access_token"]
 
-def try_get(token, url, params=None):
-    r = requests.get(url, headers={"Authorization": f"Bearer {token}"}, params=params or {})
-    print(f"  GET {url}")
-    print(f"  Status: {r.status_code}")
-    if r.status_code == 200:
+def fetch_all(token, endpoint, page_size=1000):
+    """Fetch all data points from an endpoint, handle pagination"""
+    headers = {"Authorization": f"Bearer {token}"}
+    url = f"{BASE}/{endpoint}"
+    points, page_token = [], None
+    while True:
+        params = {"pageSize": str(page_size)}
+        if page_token:
+            params["pageToken"] = page_token
+        r = requests.get(url, headers=headers, params=params)
+        if r.status_code != 200:
+            print(f"✗ {endpoint} failed: {r.status_code} — {r.text[:300]}")
+            return []
         data = r.json()
-        pts = data.get("dataPoints", data.get("rollupDataPoints", []))
-        print(f"  ✓ Got {len(pts)} points — keys: {list(data.keys())}")
-        if pts: print(f"  Sample: {json.dumps(pts[0])[:300]}")
-        return pts
-    print(f"  ✗ Error: {r.text[:300]}")
-    return None
+        pts = data.get("dataPoints", [])
+        points.extend(pts)
+        page_token = data.get("nextPageToken")
+        if not page_token:
+            break
+    print(f"✓ {endpoint}: {len(points)} total points")
+    return points
 
-def try_post(token, url, body):
-    r = requests.post(url, headers={"Authorization": f"Bearer {token}"}, json=body)
-    print(f"  POST {url}")
-    print(f"  Body: {json.dumps(body)}")
-    print(f"  Status: {r.status_code}")
-    if r.status_code == 200:
-        data = r.json()
-        pts = data.get("dataPoints", data.get("rollupDataPoints", []))
-        print(f"  ✓ Got {len(pts)} points — keys: {list(data.keys())}")
-        if pts: print(f"  Sample: {json.dumps(pts[0])[:300]}")
-        return pts
-    print(f"  ✗ Error: {r.text[:400]}")
-    return None
+def process_sleep(points, start_date, end_date):
+    """Process sleep data — reconcile already deduplicates"""
+    daily = {}
+    for p in points:
+        sleep = p.get("sleep", {})
+        interval = sleep.get("interval", {})
+        start_str = interval.get("startTime", "")
+        if not start_str:
+            continue
+
+        # Filter by date range
+        date = start_str[:10]
+        if date < start_date or date > end_date:
+            continue
+
+        stages = sleep.get("stages", [])
+        light = deep = rem = awake = 0
+        for stage in stages:
+            stype = stage.get("type", "")
+            try:
+                s = datetime.fromisoformat(stage["startTime"].replace("Z","+00:00"))
+                e = datetime.fromisoformat(stage["endTime"].replace("Z","+00:00"))
+                mins = (e - s).total_seconds() / 60
+                if stype == "LIGHT":   light  += mins
+                elif stype == "DEEP":  deep   += mins
+                elif stype == "REM":   rem    += mins
+                elif stype == "AWAKE": awake  += mins
+            except: continue
+
+        summary = sleep.get("summary", {})
+        score = summary.get("sleepScore", {}).get("overallSleepScore", None)
+        total = light + deep + rem
+
+        # Keep best-score session per day
+        if date not in daily or (score and (daily[date].get("score") or 0) < score):
+            daily[date] = {
+                "date": date,
+                "score": round(score, 1) if score else None,
+                "light": round(light, 1), "deep": round(deep, 1),
+                "rem": round(rem, 1), "awake": round(awake, 1),
+                "total_sleep_hrs": round(total / 60, 2),
+                "start_time": start_str[11:16],
+                "end_time": interval.get("endTime", "")[11:16]
+            }
+    return dict(sorted(daily.items()))
+
+def process_rhr(points, start_date, end_date):
+    """Process daily resting heart rate"""
+    result = {}
+    for p in points:
+        rhr = p.get("dailyRestingHeartRate", {})
+        # Try civil time date
+        civil = rhr.get("civilTime", {}).get("date", {})
+        if civil:
+            date = f"{civil.get('year')}-{civil.get('month',1):02d}-{civil.get('day',1):02d}"
+        else:
+            # Try physical time
+            pt = rhr.get("physicalTime", "")
+            date = pt[:10] if pt else ""
+        if date and start_date <= date <= end_date:
+            val = rhr.get("beatsPerMinute")
+            if val:
+                result[date] = round(float(val), 1)
+    return result
+
+def process_hrv(points, start_date, end_date):
+    """Process daily HRV"""
+    result = {}
+    for p in points:
+        hrv = p.get("dailyHeartRateVariability", {})
+        civil = hrv.get("civilTime", {}).get("date", {})
+        if civil:
+            date = f"{civil.get('year')}-{civil.get('month',1):02d}-{civil.get('day',1):02d}"
+        else:
+            pt = hrv.get("physicalTime", "")
+            date = pt[:10] if pt else ""
+        if date and start_date <= date <= end_date:
+            rmssd = hrv.get("rmssd")
+            if rmssd:
+                result[date] = round(float(rmssd), 1)
+    return result
 
 def main():
-    now   = datetime.now(timezone.utc)
-    start = (now - timedelta(days=14)).strftime("%Y-%m-%d")
-    end   = now.strftime("%Y-%m-%d")
-    sy, sm, sd = int(start[:4]), int(start[5:7]), int(start[8:10])
-    ey, em, ed = int(end[:4]),   int(end[5:7]),   int(end[8:10])
+    now        = datetime.now(timezone.utc)
+    end_date   = now.strftime("%Y-%m-%d")
+    start_date = (now - timedelta(days=30)).strftime("%Y-%m-%d")
 
-    print("=" * 60)
-    print(f"NephroWear Diagnostic v4 — {now.strftime('%Y-%m-%d %H:%M UTC')}")
-    print("=" * 60)
+    print("=" * 55)
+    print(f"NephroWear v5 — {now.strftime('%Y-%m-%d %H:%M UTC')}")
+    print(f"Fetching {start_date} → {end_date}")
+    print("=" * 55)
 
-    token = get_token()
+    try:
+        token = get_token()
 
-    # ── SLEEP: try different endpoint formats ──────────────
-    print("\n=== SLEEP TESTS ===")
+        # Sleep — use reconcile to auto-deduplicate across devices
+        sleep_pts = fetch_all(token, "sleep/dataPoints:reconcile")
+        # RHR and HRV — use base endpoint
+        rhr_pts   = fetch_all(token, "daily-resting-heart-rate/dataPoints")
+        hrv_pts   = fetch_all(token, "daily-heart-rate-variability/dataPoints")
 
-    print("\n[S1] GET .../sleep/dataPoints (no :list)")
-    try_get(token, f"{BASE}/sleep/dataPoints",
-            {"filter": f'sleep.interval.start_time >= "{start}T00:00:00Z"', "pageSize": "10"})
+        # Process — filter by date in Python
+        sleep_data = process_sleep(sleep_pts, start_date, end_date)
+        rhr_data   = process_rhr(rhr_pts, start_date, end_date)
+        hrv_data   = process_hrv(hrv_pts, start_date, end_date)
 
-    print("\n[S2] GET .../sleep/dataPoints:list")
-    try_get(token, f"{BASE}/sleep/dataPoints:list",
-            {"filter": f'sleep.interval.start_time >= "{start}T00:00:00Z"', "pageSize": "10"})
-
-    print("\n[S3] GET .../sleep/dataPoints:reconcile")
-    try_get(token, f"{BASE}/sleep/dataPoints:reconcile",
-            {"filter": f'sleep.interval.start_time >= "{start}T00:00:00Z"', "pageSize": "10"})
-
-    # ── RHR: try different request body formats ────────────
-    print("\n=== RESTING HR TESTS ===")
-
-    print("\n[R1] POST dailyRollUp — civil date object")
-    try_post(token, f"{BASE}/daily-resting-heart-rate/dataPoints:dailyRollUp", {
-        "range": {
-            "startDate": {"year": sy, "month": sm, "day": sd},
-            "endDate":   {"year": ey, "month": em, "day": ed}
+        output = {
+            "last_updated":  now.strftime("%Y-%m-%d %H:%M UTC"),
+            "participant":   "P3",
+            "study_start":   "2026-07-06",
+            "sleep":         sleep_data,
+            "resting_hr":    rhr_data,
+            "hrv":           hrv_data
         }
-    })
 
-    print("\n[R2] POST dailyRollUp — start/end as date strings")
-    try_post(token, f"{BASE}/daily-resting-heart-rate/dataPoints:dailyRollUp", {
-        "startDate": f"{start}", "endDate": f"{end}"
-    })
+        with open("p3_data.json", "w") as f:
+            json.dump(output, f, indent=2)
 
-    print("\n[R3] POST dailyRollUp — civilTimeInterval")
-    try_post(token, f"{BASE}/daily-resting-heart-rate/dataPoints:dailyRollUp", {
-        "civilTimeInterval": {
-            "startDate": {"year": sy, "month": sm, "day": sd},
-            "endDate":   {"year": ey, "month": em, "day": ed}
-        }
-    })
+        print(f"\n✅ SUCCESS")
+        print(f"   Sleep days: {len(sleep_data)}")
+        print(f"   RHR days:   {len(rhr_data)}")
+        print(f"   HRV days:   {len(hrv_data)}")
+        if sleep_data:
+            for d, v in sleep_data.items():
+                print(f"   {d}: score={v['score']} deep={v['deep']}min total={v['total_sleep_hrs']}h")
 
-    print("\n[R4] GET daily-resting-heart-rate/dataPoints list")
-    try_get(token, f"{BASE}/daily-resting-heart-rate/dataPoints",
-            {"filter": f'daily_resting_heart_rate.civil_time.date.year >= {sy}', "pageSize": "10"})
-
-    print("\n[R5] GET daily-resting-heart-rate/dataPoints:list no filter")
-    try_get(token, f"{BASE}/daily-resting-heart-rate/dataPoints:list", {"pageSize": "5"})
-
-    # Save empty JSON so workflow doesn't fail
-    with open("p3_data.json", "w") as f:
-        json.dump({"last_updated": now.strftime("%Y-%m-%d %H:%M UTC"),
-                   "participant": "P3", "study_start": "2026-07-06",
-                   "diagnostic": True, "sleep": {}, "resting_hr": {}, "hrv": {}}, f, indent=2)
-    print("\n✅ Diagnostic complete — check logs above to see which endpoints work!")
+    except Exception as e:
+        print(f"\n❌ ERROR: {e}")
+        import traceback; traceback.print_exc()
+        with open("p3_data.json", "w") as f:
+            json.dump({"last_updated": now.strftime("%Y-%m-%d %H:%M UTC"),
+                       "error": str(e), "sleep": {}, "resting_hr": {}, "hrv": {}}, f)
 
 if __name__ == "__main__":
     main()
