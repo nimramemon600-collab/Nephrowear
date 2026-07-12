@@ -1,0 +1,37 @@
+name: Update NephroWear Dashboard
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-dashboard:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch health data and update dashboard
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+        run: python fetch_health_data.py
+
+      - name: Commit and push updated data
+        run: |
+          git config --global user.email "nephrowear-bot@github.com"
+          git config --global user.name "NephroWear Auto-Update Bot"
+          git add p3_data.json
+          git diff --staged --quiet || git commit -m "Auto-update P3 data $(date +'%Y-%m-%d %H:%M UTC')"
+          git push
