@@ -42,6 +42,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1117;color:#E6EDF3;min-heigh
 .ptab-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;letter-spacing:.3px}
 .p1-badge{background:#1971C2;color:#fff}
 .p2-badge{background:#7950F2;color:#fff}
+.p3-badge{background:#16A34A;color:#fff}
 /* ── MAIN ── */
 .main{max-width:1200px;margin:0 auto;padding:28px 32px 60px;background:#0D1117}
 .participant-view{display:none}
@@ -163,6 +164,9 @@ table.survey tr:hover td{background:#21262D}
       </button>
       <button class="ptab" onclick="switchParticipant(2)">
         <span class="ptab-badge p2-badge">P2</span> Participant 2 &nbsp;·&nbsp; Jun 2 – Jun 7
+      </button>
+      <button class="ptab" onclick="switchParticipant(3)">
+        <span class="ptab-badge p3-badge">P3</span> Participant 3 &nbsp;·&nbsp; Jul 6 – ongoing
       </button>
     </div>
   </div>
@@ -683,7 +687,210 @@ table.survey tr:hover td{background:#21262D}
   </div>
   <div class="footnote" style="margin-top:8px">⚡ = wearable data also available · 💉 = dialysis day · All 19 nights rated "Very Good" · No sleep disturbances or medication reported · Jun 13 &amp; 16 are dialysis days but no survey submitted those dates</div>
 
-</div><!-- end p2 -->
+</div><!-- end p2 --><!-- ═══════════════════════════════ PARTICIPANT 3 ═══════════════════════════════ -->
+<div class="participant-view" id="view-p3">
+
+  <div class="info-strip">
+    <div class="info-card" style="border-left-color:#22C55E">
+      <div class="info-label">Study Period</div>
+      <div class="info-value"><strong>July 6 – Ongoing</strong><br>Data as of Jul 10 · More coming</div>
+    </div>
+    <div class="info-card" style="border-left-color:#22C55E">
+      <div class="info-label">Wearable Data</div>
+      <div class="info-value"><strong>Jul 6 – Jul 11, 2026</strong><br>Fitbit · 4 sleep nights recorded</div>
+    </div>
+    <div class="info-card" style="border-left-color:var(--amber)">
+      <div class="info-label">Dialysis Schedule</div>
+      <div class="info-value" style="color:var(--amber)"><strong>Not yet provided</strong><br>Please add to update charts</div>
+    </div>
+    <div class="info-card" style="border-left-color:var(--amber)">
+      <div class="info-label">Survey</div>
+      <div class="info-value" style="color:var(--amber)"><strong>Not yet available</strong><br>REDCap data pending</div>
+    </div>
+  </div>
+
+  <!-- BATTERY STATUS CARD -->
+  <div class="chart-card" style="margin-bottom:24px;border:1px solid #1A3A1A">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid #21262D">
+      <div style="font-size:24px">🔋</div>
+      <div>
+        <div style="font-size:15px;font-weight:600;color:#E6EDF3">Battery Status — Last confirmed reading: Jul 8 at 5PM (60%)</div>
+        <div style="font-size:12px;color:#8B949E;margin-top:2px">Drain rate: 0.51%/hr · Estimated ~24% as of Jul 12 · Please confirm with participant</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-size:30px;font-weight:700;color:#F87171;font-family:'DM Mono',monospace">~24%</div>
+        <div style="font-size:11px;color:#F87171">⚠️ Estimated — verify with P3</div>
+      </div>
+    </div>
+    <!-- Battery bar -->
+    <div style="background:#21262D;border-radius:8px;height:22px;overflow:hidden;margin-bottom:14px;position:relative">
+      <div style="background:linear-gradient(90deg,#F87171,#FB923C);width:24%;height:100%;border-radius:8px;transition:width .5s"></div>
+      <div style="position:absolute;left:calc(30% - 1px);top:0;width:2px;height:100%;background:#F87171;opacity:.8"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:#8B949E;margin-bottom:16px">
+      <span style="color:#F87171">0% — Dead</span>
+      <span style="color:#F87171">▲ 30% — Alert threshold</span>
+      <span>60% — Last confirmed Jul 8</span>
+      <span style="color:#22C55E">100% — Full</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div style="background:#21262D;border-radius:10px;padding:12px 14px;border:1px solid #3A1A1A">
+        <div style="font-size:11px;color:#F87171;margin-bottom:4px;font-weight:600">⚠️ Status Unknown</div>
+        <div style="font-size:18px;font-weight:600;color:#F87171">Verify now</div>
+        <div style="font-size:11px;color:#8B949E">Check with P3 directly</div>
+      </div>
+      <div style="background:#21262D;border-radius:10px;padding:12px 14px;border:1px solid #3A1A1A">
+        <div style="font-size:11px;color:#8B949E;margin-bottom:4px">Last confirmed reading</div>
+        <div style="font-size:18px;font-weight:600;color:#FCD34D">60% — Jul 8</div>
+        <div style="font-size:11px;color:#8B949E">Est. ~24% now (Jul 12)</div>
+      </div>
+      <div style="background:#21262D;border-radius:10px;padding:12px 14px;border:1px solid #2D4A2D">
+        <div style="font-size:11px;color:#8B949E;margin-bottom:4px">Drain rate</div>
+        <div style="font-size:20px;font-weight:600;color:#22C55E">0.51%/hr</div>
+        <div style="font-size:11px;color:#8B949E">Normal consumption</div>
+      </div>
+    </div>
+    <div class="footnote" style="margin-top:12px">🔄 Battery status will update automatically once the Google Health API automation is connected. Current estimate based on Jul 8 reading and known drain rate.</div>
+  </div>
+
+  <!-- KEY METRICS -->
+  <div class="section-title" style="color:#E6EDF3">Key Biometric Metrics — Jul 6–11</div>
+  <div class="metric-grid">
+    <div class="metric">
+      <div class="metric-label">Avg Resting HR</div>
+      <div class="metric-val">73.6 <span class="metric-unit">bpm</span></div>
+      <div class="metric-note good">Stable · Jul 6–11</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg Sleep Score</div>
+      <div class="metric-val">67.3 <span class="metric-unit">/100</span></div>
+      <div class="metric-note warn">Avg over 3 scored nights</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg Deep Sleep</div>
+      <div class="metric-val">41.8 <span class="metric-unit">min</span></div>
+      <div class="metric-note warn">Jul 11 recovering (52 min)</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg REM Sleep</div>
+      <div class="metric-val">47.8 <span class="metric-unit">min</span></div>
+      <div class="metric-note warn">Variable across nights</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Avg HRV (RMSSD)</div>
+      <div class="metric-val">75.2 <span class="metric-unit">ms</span></div>
+      <div class="metric-note good">Avg Jul 7 &amp; 9 · Jul 11 pending</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Battery Now</div>
+      <div class="metric-val" style="color:#F87171">~12 <span class="metric-unit">%</span></div>
+      <div class="metric-note warn">Estimated Jul 12 — verify!</div>
+    </div>
+  </div>
+
+  <!-- HR CHART -->
+  <div class="section-title" style="color:#E6EDF3">Heart Rate — Jul 6–11</div>
+  <div class="chart-grid full">
+    <div class="chart-card">
+      <div class="chart-card-title">Resting Heart Rate (bpm)</div>
+      <div class="chart-card-sub">Daily resting HR · Jul 6–11 · orange = dialysis day (when provided)</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#22C55E"></div>Resting HR</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="p3-rhr" role="img" aria-label="P3 resting heart rate July 6 to 8">Resting HR 73–75 bpm.</canvas></div>
+    </div>
+  </div>
+
+  <!-- SLEEP CHARTS -->
+  <div class="section-title" style="color:#E6EDF3">Sleep Quality — Jul 7–11</div>
+  <div class="chart-grid full">
+    <div class="chart-card">
+      <div class="chart-card-title">Sleep Score &amp; Deep Sleep</div>
+      <div class="chart-card-sub">Highest-score session selected per night · Jul 7–11 (Jul 10 no data)</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#22C55E"></div>Sleep score</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1098AD"></div>Deep sleep (min)</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="p3-sleep" role="img" aria-label="P3 sleep score and deep sleep">Sleep scores 57–74; deep sleep 22–54 min.</canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-grid full" style="margin-bottom:16px">
+    <div class="chart-card">
+      <div class="chart-card-title">Sleep Stage Breakdown — Light · Deep · REM · Awake (minutes)</div>
+      <div class="chart-card-sub">Highest-score session per night · Jul 7–11 (Jul 10 no data)</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#74C0FC"></div>Light sleep</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#1864AB"></div>Deep sleep</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#22C55E"></div>REM sleep</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#DEE2E6"></div>Awake</div>
+      </div>
+      <div style="position:relative;height:260px"><canvas id="p3-stages" role="img" aria-label="P3 sleep stage breakdown July 7 to 8">Sleep stages breakdown.</canvas></div>
+      <div class="footnote" style="margin-top:10px">4 nights of data (Jul 10 — no sleep recorded). Duplicate sessions removed via highest-score methodology. Jul 11 shows deep sleep recovering to 52 min. Score for Jul 11 pending sync.</div>
+    </div>
+  </div>
+
+  <!-- BATTERY CHART -->
+  <div class="section-title" style="color:#E6EDF3">Battery Drain Timeline — Jul 6–12</div>
+  <div class="chart-grid full" style="margin-bottom:24px">
+    <div class="chart-card">
+      <div class="chart-card-title">Battery % Over Time — Jul 6–8 confirmed · Jul 9–12 estimated</div>
+      <div class="chart-card-sub">Confirmed readings Jul 6–8 · estimated thereafter at 0.51%/hr · red line = 30% threshold</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#22C55E"></div>Confirmed %</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#FCD34D"></div>Estimated %</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F87171"></div>30% alert threshold</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="p3-battery" role="img" aria-label="P3 battery drain timeline">Battery declining from 84% to estimated ~24%.</canvas></div>
+      <div class="footnote" style="margin-top:8px">🔄 Will update automatically once Google Health API automation is connected · Last confirmed reading: Jul 8 at 5PM (60%)</div>
+    </div>
+  </div>
+
+  <!-- TOTAL SLEEP DURATION -->
+  <div class="section-title" style="color:#E6EDF3">Total Watch Sleep Duration per Night — Jul 7–11</div>
+  <div class="chart-grid full" style="margin-bottom:24px">
+    <div class="chart-card">
+      <div class="chart-card-title">Total Watch Sleep Duration per Night</div>
+      <div class="chart-card-sub">Light + Deep + REM combined · from highest-score session · Jul 7–11</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#22C55E"></div>Total sleep (hrs)</div>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="p3-sleepdur" role="img" aria-label="P3 total watch sleep duration per night">Total sleep ranged 2.5h to 5.7h per night.</canvas></div>
+      <div class="footnote" style="margin-top:8px">4 nights shown (Jul 10 skipped — no data recorded). Jul 11 shows slight recovery (2.82h). Jul 7 remains the longest recorded night (5.7h).</div>
+    </div>
+  </div>
+
+  <!-- EXIT INTERVIEW PLACEHOLDER -->
+  <div class="section-title" style="color:#E6EDF3">Exit Interview — Participant 3</div>
+  <div class="exit-card">
+    <div class="exit-header">
+      <div class="exit-icon">📋</div>
+      <div>
+        <div class="exit-title">Post-Study Exit Interview</div>
+        <div class="exit-date" style="color:#8B949E;font-size:12px">Not yet conducted · Study ongoing as of Jul 12, 2026</div>
+      </div>
+    </div>
+    <div style="background:#21262D;border-radius:10px;padding:24px;text-align:center;color:#8B949E;font-size:13px">
+      <div style="font-size:28px;margin-bottom:10px">⏳</div>
+      <strong style="color:#E6EDF3">Exit interview pending</strong><br>
+      Will be conducted at end of study period.<br>
+      Results will be added here once available.
+    </div>
+  </div>
+
+  <!-- SURVEY PLACEHOLDER -->
+  <div class="section-title" style="color:#E6EDF3">Daily Survey Data</div>
+  <div class="chart-card" style="margin-bottom:24px">
+    <div style="background:#21262D;border-radius:10px;padding:24px;text-align:center;color:#8B949E;font-size:13px">
+      <div style="font-size:28px;margin-bottom:10px">📝</div>
+      <strong style="color:#E6EDF3">No survey data yet</strong><br>
+      REDCap MyCap daily survey data will appear here once P3 starts submitting responses.<br>
+      <span style="color:var(--amber);font-size:12px;margin-top:10px;display:block">⚠️ Check MyCap notifications are enabled on P3's phone · Verify participant joined the MyCap project via QR code</span>
+    </div>
+  </div>
+
+</div><!-- end p3 -->
+
 </div><!-- end main -->
 
 <script>
@@ -958,7 +1165,100 @@ new Chart(document.getElementById('p2-latency'), {
   }
 });
 
-// ── Tab switcher ──────────────────────────────────────────
+// ── P3 CHARTS ────────────────────────────────────────────
+// Resting HR Jul 6-8
+new Chart(document.getElementById('p3-rhr'), {
+  type:'bar',
+  data:{labels:['Jul 6','Jul 7','Jul 8','Jul 9','Jul 10','Jul 11'],datasets:[
+    {label:'Resting HR',data:[73.7,75.2,73.5,72.9,73.1,73.3],backgroundColor:'rgba(34,197,94,0.8)',borderColor:'#16A34A',borderWidth:1,borderRadius:4}
+  ]},
+  options:{...baseOpts(),scales:{
+    x:{grid:{color:gc},ticks:{color:tc,font:{size:12}}},
+    y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},min:0,max:100,title:{display:true,text:'bpm',color:tc,font:{size:10}}}
+  }}
+});
+
+// P3 Sleep score + deep sleep (Jul 7 & 8 best sessions)
+new Chart(document.getElementById('p3-sleep'), {
+  type:'bar',
+  data:{labels:['Jul 7','Jul 8','Jul 9','Jul 11*'],datasets:[
+    {label:'Sleep score',data:[70.0,74.5,57.3,null],backgroundColor:'rgba(34,197,94,0.8)',borderRadius:4,yAxisID:'y',order:2},
+    {label:'Deep sleep (min)',data:[53.5,39.5,22.0,52.0],type:'line',borderColor:'#1098AD',pointRadius:6,pointBackgroundColor:'#1098AD',tension:0.3,fill:false,yAxisID:'y2',order:1}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:12}}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},min:0,max:100,title:{display:true,text:'Score /100',color:tc,font:{size:10}}},
+      y2:{position:'right',grid:{display:false},ticks:{color:tc,font:{size:11}},min:0,max:100,title:{display:true,text:'Deep sleep (min)',color:tc,font:{size:10}}}
+    }
+  }
+});
+
+// P3 Sleep stages stacked
+new Chart(document.getElementById('p3-stages'), {
+  type:'bar',
+  data:{labels:['Jul 7','Jul 8','Jul 9','Jul 11'],datasets:[
+    {label:'Light sleep',data:[198.5,95.5,100.0,81.0],backgroundColor:'rgba(116,192,252,0.85)',stack:'sleep'},
+    {label:'Deep sleep', data:[53.5, 39.5, 22.0, 52.0], backgroundColor:'rgba(24,100,171,0.9)', stack:'sleep'},
+    {label:'REM sleep',  data:[90.0, 38.0, 27.0, 36.0], backgroundColor:'rgba(34,197,94,0.85)', stack:'sleep'},
+    {label:'Awake',      data:[49.5, 11.0, 36.0, 0.0], backgroundColor:'rgba(222,226,230,0.7)',stack:'sleep'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{
+      label:function(ctx){const h=Math.floor(ctx.raw/60);const m=Math.round(ctx.raw%60);return `${ctx.dataset.label}: ${h>0?h+'h ':''}${m}min`;}
+    }}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:12}}},
+      y:{grid:{color:gc},stacked:true,max:720,ticks:{color:tc,font:{size:10},callback:v=>`${Math.round(v/60)}h`},
+         title:{display:true,text:'Minutes',color:tc,font:{size:10}}}
+    }
+  }
+});
+
+// P3 Battery drain chart
+// P3 Total sleep duration per night
+new Chart(document.getElementById('p3-sleepdur'), {
+  type:'bar',
+  data:{labels:['Jul 7','Jul 8','Jul 9','Jul 11'],datasets:[
+    {label:'Total sleep',data:[5.70,2.88,2.48,2.82],backgroundColor:'rgba(34,197,94,0.8)',borderRadius:4}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{
+      label:function(ctx){const h=Math.floor(ctx.raw);const m=Math.round((ctx.raw-h)*60);
+        return `Watch sleep: ${h}h ${m}min`;}
+    }}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:12}}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10},callback:v=>`${v}h`},
+         min:0,max:8,title:{display:true,text:'Hours of sleep',color:tc,font:{size:10}}}
+    }
+  }
+});
+
+// P3 Battery drain — confirmed Jul 6-8, estimated Jul 9-12
+const battLabels=['Jul 6 5PM','8PM','11PM','Jul 7 2AM','5AM','8AM','11AM','2PM','5PM','8PM','11PM',
+  'Jul 8 2AM','5AM','8AM','11AM','2PM','5PM','Jul 9','Jul 10','Jul 11','Jul 12'];
+const battConf=[84,76,75,74,73,72,71,70,68,67,66,65,64,63,62,62,60,null,null,null,null];
+const battEst= [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,60,47,35,24,12];
+
+new Chart(document.getElementById('p3-battery'), {
+  type:'line',
+  data:{labels:battLabels,datasets:[
+    {label:'Confirmed %',data:battConf,borderColor:'#22C55E',backgroundColor:'rgba(34,197,94,0.08)',pointRadius:2,tension:0.2,fill:true,spanGaps:false},
+    {label:'Estimated %',data:battEst,borderColor:'#FCD34D',backgroundColor:'rgba(252,211,77,0.06)',pointRadius:3,tension:0.2,fill:true,borderDash:[5,3],spanGaps:false},
+    {label:'30% threshold',data:Array(battLabels.length).fill(30),borderColor:'#F87171',borderDash:[4,4],borderWidth:1.5,pointRadius:0}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:false}},
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:10}},min:0,max:100,title:{display:true,text:'Battery %',color:tc,font:{size:10}}}
+    }
+  }
+});
+
+// ── Tab switcher ──────────────────────────────────────
 function switchParticipant(n) {
   document.querySelectorAll('.participant-view').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.ptab').forEach(el=>el.classList.remove('active'));
