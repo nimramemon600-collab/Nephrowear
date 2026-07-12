@@ -1,6 +1,6 @@
 """
-NephroWear Study — Health Data Fetcher v6
-Sleep working! Now fixing sleep score + RHR/HRV field names
+NephroWear Study — Health Data Fetcher v7 FINAL
+All field names confirmed from API diagnostic runs
 """
 import os, json, requests
 from datetime import datetime, timedelta, timezone
@@ -19,12 +19,12 @@ def get_token():
     print("✓ Access token obtained")
     return r.json()["access_token"]
 
-def fetch_all(token, endpoint, page_size=1000):
+def fetch_all(token, endpoint):
     headers = {"Authorization": f"Bearer {token}"}
     url = f"{BASE}/{endpoint}"
     points, page_token = [], None
     while True:
-        params = {"pageSize": str(page_size)}
+        params = {"pageSize": "1000"}
         if page_token:
             params["pageToken"] = page_token
         r = requests.get(url, headers=headers, params=params)
@@ -38,16 +38,19 @@ def fetch_all(token, endpoint, page_size=1000):
         if not page_token:
             break
     print(f"✓ {endpoint}: {len(points)} points")
-    # Print first point structure for debugging
-    if points:
-        print(f"  Sample keys: {list(points[0].keys())}")
-        print(f"  Sample: {json.dumps(points[0])[:500]}")
     return points
 
 def process_sleep(points, start_date, end_date):
+    """
+    Confirmed field structure:
+    point.sleep.interval.startTime — session start
+    point.sleep.stages[] — stage segments with type/startTime/endTime
+    point.sleep.summary.stagesSummary — stage totals
+    No sleep score available via API (only in Takeout)
+    """
     daily = {}
     for p in points:
-        sleep = p.get("sleep", {})
+        sleep    = p.get("sleep", {})
         interval = sleep.get("interval", {})
         start_str = interval.get("startTime", "")
         if not start_str:
@@ -56,9 +59,9 @@ def process_sleep(points, start_date, end_date):
         if date < start_date or date > end_date:
             continue
 
-        stages = sleep.get("stages", [])
+        # Parse stage durations
         light = deep = rem = awake = 0
-        for stage in stages:
+        for stage in sleep.get("stages", []):
             stype = stage.get("type", "")
             try:
                 s = datetime.fromisoformat(stage["startTime"].replace("Z","+00:00"))
@@ -70,28 +73,19 @@ def process_sleep(points, start_date, end_date):
                 elif stype == "AWAKE": awake  += mins
             except: continue
 
-        # Try all possible score field locations
-        summary = sleep.get("summary", {})
-        score = (summary.get("sleepScore", {}).get("overallSleepScore") or
-                 summary.get("overallSleepScore") or
-                 sleep.get("sleepScore", {}).get("overallSleepScore") or
-                 sleep.get("overallSleepScore") or
-                 p.get("sleepScore", {}).get("overallSleepScore") or
-                 p.get("overallSleepScore"))
-
-        # Print summary structure for first record
-        if not daily:
-            print(f"  Sleep summary keys: {list(summary.keys())}")
-            print(f"  Sleep top-level keys: {list(sleep.keys())}")
-            print(f"  Point top-level keys: {list(p.keys())}")
+        # Sleep score from stagesSummary if available
+        stages_summary = sleep.get("summary", {}).get("stagesSummary", {})
+        score = stages_summary.get("sleepScore") or stages_summary.get("overallSleepScore")
 
         total = light + deep + rem
         if date not in daily or (score and (daily[date].get("score") or 0) < score):
             daily[date] = {
                 "date": date,
                 "score": round(score, 1) if score else None,
-                "light": round(light, 1), "deep": round(deep, 1),
-                "rem": round(rem, 1), "awake": round(awake, 1),
+                "light": round(light, 1),
+                "deep":  round(deep, 1),
+                "rem":   round(rem, 1),
+                "awake": round(awake, 1),
                 "total_sleep_hrs": round(total / 60, 2),
                 "start_time": start_str[11:16],
                 "end_time": interval.get("endTime", "")[11:16]
@@ -99,37 +93,41 @@ def process_sleep(points, start_date, end_date):
     return dict(sorted(daily.items()))
 
 def process_rhr(points, start_date, end_date):
+    """
+    Confirmed field structure:
+    point.dailyRestingHeartRate.date.year/month/day
+    point.dailyRestingHeartRate.beatsPerMinute (string)
+    """
     result = {}
     for p in points:
-        # Try every possible key in the point
-        for key, val in p.items():
-            if isinstance(val, dict):
-                # Look for date and HR value in nested structure
-                civil = val.get("civilTime", {}).get("date", {})
-                phys  = val.get("physicalTime", "")
-                bpm   = (val.get("beatsPerMinute") or val.get("bpm") or
-                         val.get("value") or val.get("restingHeartRate"))
-                if (civil or phys) and bpm:
-                    date = (f"{civil['year']}-{civil['month']:02d}-{civil['day']:02d}"
-                            if civil else phys[:10])
-                    if start_date <= date <= end_date:
-                        result[date] = round(float(bpm), 1)
+        rhr      = p.get("dailyRestingHeartRate", {})
+        date_obj = rhr.get("date", {})
+        if not date_obj:
+            continue
+        date = f"{date_obj['year']}-{date_obj['month']:02d}-{date_obj['day']:02d}"
+        if start_date <= date <= end_date:
+            bpm = rhr.get("beatsPerMinute")
+            if bpm:
+                result[date] = round(float(bpm), 1)
     return result
 
 def process_hrv(points, start_date, end_date):
+    """
+    Confirmed field structure:
+    point.dailyHeartRateVariability.date.year/month/day
+    point.dailyHeartRateVariability.averageHeartRateVariabilityMilliseconds (float)
+    """
     result = {}
     for p in points:
-        for key, val in p.items():
-            if isinstance(val, dict):
-                civil = val.get("civilTime", {}).get("date", {})
-                phys  = val.get("physicalTime", "")
-                rmssd = (val.get("rmssd") or val.get("RMSSD") or
-                         val.get("value") or val.get("hrvRmssd"))
-                if (civil or phys) and rmssd:
-                    date = (f"{civil['year']}-{civil['month']:02d}-{civil['day']:02d}"
-                            if civil else phys[:10])
-                    if start_date <= date <= end_date:
-                        result[date] = round(float(rmssd), 1)
+        hrv      = p.get("dailyHeartRateVariability", {})
+        date_obj = hrv.get("date", {})
+        if not date_obj:
+            continue
+        date = f"{date_obj['year']}-{date_obj['month']:02d}-{date_obj['day']:02d}"
+        if start_date <= date <= end_date:
+            rmssd = hrv.get("averageHeartRateVariabilityMilliseconds")
+            if rmssd:
+                result[date] = round(float(rmssd), 1)
     return result
 
 def main():
@@ -138,7 +136,7 @@ def main():
     start_date = (now - timedelta(days=30)).strftime("%Y-%m-%d")
 
     print("=" * 55)
-    print(f"NephroWear v6 — {now.strftime('%Y-%m-%d %H:%M UTC')}")
+    print(f"NephroWear v7 FINAL — {now.strftime('%Y-%m-%d %H:%M UTC')}")
     print(f"Fetching {start_date} → {end_date}")
     print("=" * 55)
 
@@ -155,8 +153,11 @@ def main():
 
         output = {
             "last_updated": now.strftime("%Y-%m-%d %H:%M UTC"),
-            "participant": "P3", "study_start": "2026-07-06",
-            "sleep": sleep_data, "resting_hr": rhr_data, "hrv": hrv_data
+            "participant":  "P3",
+            "study_start":  "2026-07-06",
+            "sleep":        sleep_data,
+            "resting_hr":   rhr_data,
+            "hrv":          hrv_data
         }
 
         with open("p3_data.json", "w") as f:
@@ -164,10 +165,10 @@ def main():
 
         print(f"\n✅ SUCCESS")
         print(f"   Sleep: {len(sleep_data)} days")
-        print(f"   RHR:   {len(rhr_data)} days")
-        print(f"   HRV:   {len(hrv_data)} days")
-        for d,v in sleep_data.items():
-            print(f"   {d}: score={v['score']} deep={v['deep']}min")
+        print(f"   RHR:   {len(rhr_data)} days → {rhr_data}")
+        print(f"   HRV:   {len(hrv_data)} days → {hrv_data}")
+        for d, v in sleep_data.items():
+            print(f"   {d}: score={v['score']} deep={v['deep']}min total={v['total_sleep_hrs']}h")
 
     except Exception as e:
         print(f"\n❌ ERROR: {e}")
