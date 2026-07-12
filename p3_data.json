@@ -1,7 +1,8 @@
 {
-  "last_updated": "2026-07-12 22:41 UTC",
+  "last_updated": "2026-07-12 22:56 UTC",
   "participant": "P3",
   "study_start": "2026-07-06",
+  "diagnostic": true,
   "sleep": {},
   "resting_hr": {},
   "hrv": {}
