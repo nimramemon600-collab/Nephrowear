@@ -99,33 +99,34 @@ def process_hrv(points, start_date, end_date):
     return result
 
 def inject_into_html(data):
-    """Inject p3 data directly into index.html as a JS variable"""
+    """Update P3 data variables directly in index.html"""
+    import re as _re
     try:
         with open("index.html", "r") as f:
             html = f.read()
 
-        json_str = json.dumps(data, indent=2)
+        rhr_json   = json.dumps(data["resting_hr"])
+        sleep_json = json.dumps({d: {"deep":v["deep"],"light":v["light"],"rem":v["rem"],"awake":v["awake"],"total":v["total_sleep_hrs"]} for d,v in data["sleep"].items()})
+        hrv_json   = json.dumps(data["hrv"])
+        updated    = data["last_updated"]
 
-        # Replace the injected data block
-        new_block = f"/* P3_DATA_START */\nwindow.P3_LIVE_DATA = {json_str};\n/* P3_DATA_END */"
+        new_block = f"""// P3_DATA_START
+const P3_RHR   = {rhr_json};
+const P3_SLEEP = {sleep_json};
+const P3_HRV   = {hrv_json};
+const P3_UPDATED = "{updated}";
+// P3_DATA_END"""
 
-        if "/* P3_DATA_START */" in html:
-            html = re.sub(
-                r'/\* P3_DATA_START \*/.*?/\* P3_DATA_END \*/',
-                new_block, html, flags=re.DOTALL
-            )
+        if "// P3_DATA_START" in html:
+            html = _re.sub(r"// P3_DATA_START.*?// P3_DATA_END", new_block, html, flags=_re.DOTALL)
+            with open("index.html", "w") as f:
+                f.write(html)
+            print(f"✓ P3 data injected — {len(data['resting_hr'])} RHR days, {len(data['sleep'])} sleep days")
         else:
-            # Insert before closing </script>
-            html = html.replace(
-                "// Load P3 data on page load\nloadP3Data();",
-                f"{new_block}\n// Load P3 data on page load\nloadP3Data();"
-            )
-
-        with open("index.html", "w") as f:
-            f.write(html)
-        print("✓ Injected data into index.html")
+            print("✗ P3_DATA_START marker not found in index.html")
     except Exception as e:
-        print(f"✗ HTML injection failed: {e}")
+        print(f"✗ Injection failed: {e}")
+        import traceback; traceback.print_exc()
 
 def main():
     now        = datetime.now(timezone.utc)
