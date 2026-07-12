@@ -1184,13 +1184,11 @@ function fmtDate(iso) {
 }
 
 async function loadP3Data() {
-  // Show loading state
   document.getElementById('p3-last-updated').textContent = 'Loading live data...';
-
   try {
-    const resp = await fetch('p3_data.json?t=' + Date.now());
-    if (!resp.ok) throw new Error('Could not load p3_data.json');
-    const d = await resp.json();
+    // Use data injected by GitHub Actions bot (no fetch needed)
+    const d = window.P3_LIVE_DATA || null;
+    if (!d) throw new Error('No live data available yet');
 
     // ── Update last updated timestamp ─────────────────
     document.getElementById('p3-last-updated').textContent =
