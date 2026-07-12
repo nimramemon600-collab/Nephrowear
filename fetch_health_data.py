@@ -73,9 +73,7 @@ def process_sleep(points, start_date, end_date):
                 elif stype == "AWAKE": awake  += mins
             except: continue
 
-        # Sleep score from stagesSummary if available
-        stages_summary = sleep.get("summary", {}).get("stagesSummary", {})
-        score = stages_summary.get("sleepScore") or stages_summary.get("overallSleepScore")
+        score = None  # Sleep score not available via Google Health API
 
         total = light + deep + rem
         if date not in daily or (score and (daily[date].get("score") or 0) < score):
