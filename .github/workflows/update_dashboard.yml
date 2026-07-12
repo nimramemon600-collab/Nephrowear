@@ -2,11 +2,8 @@ name: Update NephroWear Dashboard
 
 on:
   schedule:
-    - cron: '0 6 * * *'
-  workflow_dispatch:
-
-permissions:
-  contents: write
+    - cron: '0 6 * * *'   # Runs every day at 6 AM UTC (2 AM EDT)
+  workflow_dispatch:        # Also allows you to trigger it manually
 
 jobs:
   update-dashboard:
@@ -35,6 +32,6 @@ jobs:
         run: |
           git config --global user.email "nephrowear-bot@github.com"
           git config --global user.name "NephroWear Auto-Update Bot"
-          git add p3_data.json
+          git add p3_data.json index.html
           git diff --staged --quiet || git commit -m "Auto-update P3 data $(date +'%Y-%m-%d %H:%M UTC')"
           git push
